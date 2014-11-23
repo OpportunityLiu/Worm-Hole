@@ -11,6 +11,7 @@
 #ifndef _VSARDUINO_H_
 #define _VSARDUINO_H_
 #define __BIN_I586__
+#define _VMDEBUG 1
 #define ARDUINO 153
 #define ARDUINO_MAIN
 #define printf iprintf
