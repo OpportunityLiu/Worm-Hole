@@ -15,19 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Visual Micro\.WormHole.vsarduino.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="motor.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="WormHole.ino" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="motor.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
