@@ -11,7 +11,6 @@
 #ifndef _VSARDUINO_H_
 #define _VSARDUINO_H_
 #define __BIN_I586__
-#define _VMDEBUG 1
 #define ARDUINO 153
 #define ARDUINO_MAIN
 #define printf iprintf
@@ -28,6 +27,4 @@
 #include "C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d\pins_arduino.h" 
 #include "C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d\variant.h" 
 #include "C:\Users\正元\Documents\Arduino\WormHole\WormHole.ino"
-#include "C:\Users\正元\Documents\Arduino\WormHole\motor.cpp"
-#include "C:\Users\正元\Documents\Arduino\WormHole\motor.h"
 #endif
