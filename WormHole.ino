@@ -1,18 +1,4 @@
 
-//接口定义
-
-//PIN: 左侧电机转速控制 (PMW)
-#define pin_motor_l_pmw 6
-//PIN: 左侧电机转速控制 (PMW)
-#define pin_motor_l_h 5
-//PIN: 左侧电机转速控制 (PMW)
-#define pin_motor_l_l 7
-//PIN: 右侧电机转速控制 (PMW)
-#define pin_motor_r_pmw 3
-//PIN: 右侧电机转速控制 (PMW)
-#define pin_motor_r_h 2
-//PIN: 右侧电机转速控制 (PMW)
-#define pin_motor_r_l 4
 #include "Wire\Wire.h"
 
 class Motor
@@ -27,11 +13,13 @@ public:
         pinMode(pin_high, OUTPUT);
     }
 
+    //获取速度，-255~255
     int getSpeed()
     {
         return speed;
     }
 
+    //设置速度，-255~255
     void setSpeed(int speed)
     {
         if (speed > 255 || speed < -255)
@@ -58,8 +46,10 @@ private:
     int speed = 0;
 };
 
-Motor motorL(6, 7, 5);
-Motor motorR(3, 4, 2);
+//左侧电机
+Motor motorL = Motor(6, 7, 5);
+//右侧电机
+Motor motorR = Motor(3, 4, 2);
 
 void setup()
 {
