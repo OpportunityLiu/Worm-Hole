@@ -17,4 +17,9 @@
   <ItemGroup>
     <None Include="WormHole.ino" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Visual Micro\.WormHole.vsarduino.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
