@@ -82,7 +82,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\cores\arduino;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d;C:\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr;C:\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr\include;C:\arduino-1.5.3-Intel.1.0.4\libraries;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\libraries;C:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\正元\Documents\Arduino\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\cores\arduino;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d;C:\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr;C:\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr\include;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\libraries\Wire;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\libraries\Wire\utility;C:\arduino-1.5.3-Intel.1.0.4\libraries;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\libraries;C:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\正元\Documents\Arduino\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\Users\正元\Documents\Arduino\WormHole\Visual Micro\.WormHole.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -98,6 +98,9 @@
     <None Include="WormHole.ino">
       <FileType>CppCode</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Visual Micro\.WormHole.vsarduino.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
