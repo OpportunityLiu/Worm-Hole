@@ -48,8 +48,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\cores\arduino;C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d;C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr;C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr\include;C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\libraries;C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\libraries;C:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\正元\Documents\Arduino\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>C:\Users\正元\Documents\Arduino\WormHole\Visual Micro\.WormHole.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\cores\arduino;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d;C:\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr;C:\arduino-1.5.3-Intel.1.0.4/hardware/tools/x86/i586-poky-linux-uclibc\usr\include;C:\arduino-1.5.3-Intel.1.0.4\libraries;C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\libraries;E:\visualstudio\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\LionHere\Documents\Arduino\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>C:\Users\LionHere\Documents\Arduino\Worm Hole\Visual Micro\.Worm Hole.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__BIN_I586__;_VMDEBUG=1;ARDUINO=153;ARDUINO_MAIN;printf=iprintf;__X86__;__x86__;F_CPU=-m32;__cplusplus;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -77,6 +77,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Visual Micro\.Worm Hole.vsarduino.h" />
     <ClInclude Include="Visual Micro\.WormHole.vsarduino.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
