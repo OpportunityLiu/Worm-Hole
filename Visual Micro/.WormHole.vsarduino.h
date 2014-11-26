@@ -24,8 +24,10 @@
 //
 //
 
-#include "C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\cores\arduino\arduino.h"
-#include "C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d\pins_arduino.h" 
-#include "C:\Program Files (x86)\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d\variant.h" 
+#include "C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\cores\arduino\arduino.h"
+#include "C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d\pins_arduino.h" 
+#include "C:\arduino-1.5.3-Intel.1.0.4\hardware\arduino\x86\variants\galileo_fab_d\variant.h" 
 #include "C:\Users\正元\Documents\Arduino\WormHole\WormHole.ino"
+#include "C:\Users\正元\Documents\Arduino\WormHole\motor.cpp"
+#include "C:\Users\正元\Documents\Arduino\WormHole\motor.h"
 #endif
