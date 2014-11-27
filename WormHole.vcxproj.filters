@@ -21,5 +21,8 @@
     <ClInclude Include="Visual Micro\.WormHole.vsarduino.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Visual Micro\.Worm Hole.vsarduino.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

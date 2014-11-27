@@ -43,18 +43,20 @@ public:
 
 private:
     uint8_t pmw, low, high;
-    int speed = 0;
+	int speed/* = 0*/;
 };
 
-//左侧电机
-Motor motorL = Motor(6, 7, 5);
-//右侧电机
-Motor motorR = Motor(3, 4, 2);
+Motor* motorL;
+Motor* motorR;
 
 void setup()
 {
-    motorL.setSpeed(100);
-    motorR.setSpeed(200);
+	//左侧电机
+	motorL = new Motor(6, 7, 5);
+	//右侧电机
+	motorR = new Motor(3, 4, 2);
+    motorL -> setSpeed(100);
+    motorR -> setSpeed(200);
 }
 
 void loop()
