@@ -4,6 +4,7 @@
 class Motor
 {
 public:
+    //构造函数
     Motor(uint8_t pin_pmw, uint8_t pin_low, uint8_t pin_high)
     {
         pmw = pin_pmw;
@@ -12,6 +13,7 @@ public:
         motorspeed = 0;
     }
 
+    //初始化
     void Init()
     {
         pinMode(low, OUTPUT);
@@ -48,13 +50,13 @@ public:
 
 private:
     uint8_t pmw, low, high;
-	int motorspeed;
+    int motorspeed;
 };
 
 //左侧电机
-Motor motorL(6, 7, 5);
+Motor motorL = Motor(6, 5, 7);
 //右侧电机
-Motor motorR(3, 4, 2);
+Motor motorR = Motor(3, 2, 4);
 
 void setup()
 {
