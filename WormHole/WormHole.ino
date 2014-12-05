@@ -1,11 +1,14 @@
 
 #include "Wire\Wire.h"
 
+//表示针脚的定义
+typedef uint8_t pin;
+
 class Motor
 {
 public:
     //构造函数
-    Motor(uint8_t pin_pmw, uint8_t pin_low, uint8_t pin_high,uint8_t pin_speed,void(*callback)())
+    Motor(pin pin_pmw, pin pin_low, pin pin_high, pin pin_speed, void(*callback)())
     {
         pmw = pin_pmw;
         high = pin_high;
@@ -13,6 +16,7 @@ public:
         speed = pin_speed;
         motorspeed = 0;
         distance = 0;
+        range = 0;
         distanceCallback = callback;
     }
 
@@ -55,22 +59,30 @@ public:
     //修改路程计数，在中断函数中调用
     void DistanceMeasure()
     {
+        distance++;
         if (speed >= 0)
-            distance++;
+            range++;
         else
-            distance--;
+            range--;
     }
 
-    //获取路程，以码盘转过的齿数计算
-    long GetDistance()
+    //获取距离，以码盘转过的齿数计算（只增不减）
+    uint64_t GetDistance()
     {
         return distance;
+    }   
+    
+    //获取路程，以码盘转过的齿数计算（正向前进增加，反向前进减小）
+    int64_t GetRange()
+    {
+        return range;
     }
 
 private:
-    uint8_t pmw, low, high, speed;
+    pin pmw, low, high, speed;
     int motorspeed;
-    long distance;
+    uint64_t distance;
+    int64_t range;
     void(*distanceCallback)();
 };
 
@@ -110,42 +122,104 @@ class LigetSensor
 public:
     LigetSensor()
     {
-        
     }
 
     //初始化
     void Init()
     {
         Wire.begin();
-        Wire.beginTransmission(0x13);
+        Wire.beginTransmission(i2cadd);
         Wire.write(0x01);
         Wire.endTransmission();
+        SetDirection(0);
     }
 
-    //获取光强
-    uint16_t GetLux()
+    //获取光强，4 lux 分辨率，24 ms 响应时间
+    uint16_t GetLuxL()
     {
         uint16_t temp = 0;
-        Wire.beginTransmission(0x13);
+        Wire.beginTransmission(i2cadd);
+        Wire.write(0x13);
+        Wire.endTransmission();
+        delay(24);
+        Wire.requestFrom(i2cadd, 2);
+        Wire.readBytes((char*)&temp, 2);
+        return temp;
+    }   
+    
+    //获取光强，1 lux 分辨率，180 ms 响应时间
+    uint16_t GetLuxH()
+    {
+        uint16_t temp = 0;
+        Wire.beginTransmission(i2cadd);
         Wire.write(0x10);
         Wire.endTransmission();
         delay(180);
-        Wire.requestFrom(0x13, 2);
+        Wire.requestFrom(i2cadd, 2);
         Wire.readBytes((char*)&temp, 2);
         return temp;
     }
+
+    //设置舵机方向，-128~127
+    void SetDirection(int8_t val)
+    {
+        direction = val;
+        analogWrite(pin, val + 128);
+    }
+
+    //获取舵机方向，-128~127
+    int8_t GetDirection()
+    {
+        return direction;
+    }
+
+private:
+    const int i2cadd = 0x13;
+    const pin pin = 11;
+    int8_t direction;
 };
+
+class DistanceSensor
+{
+public:
+    DistanceSensor(pin pin_trig,pin pin_echo)
+    {
+        trig = pin_trig;
+        echo = pin_echo;
+    }
+
+    void Init()
+    {
+        pinMode(trig, OUTPUT);
+    }
+
+    //测试距离，单位为 mm
+    double GetDistance()
+    {
+        digitalWrite(trig, HIGH);
+        delay(1);
+        digitalWrite(trig, LOW);
+        return (double)pulseIn(echo, HIGH, 60000) * 0.17;
+    }
+
+private:
+    pin trig, echo;
+};
+
 
 //光线传感器
 LigetSensor ligetSensor = LigetSensor();
+
 //蓝牙串口
 UART BlueTeeth = UART(9600);
+
 //左侧电机
 Motor motorL = Motor(6, 7, 5, 13, InterruptL);
 void InterruptL()
 {
     motorL.DistanceMeasure();
 }
+
 //右侧电机
 Motor motorR = Motor(3, 4, 2, 12, InterruptR);
 void InterruptR()
@@ -153,14 +227,31 @@ void InterruptR()
     motorR.DistanceMeasure();
 }
 
-void setup()
+//前方距离传感器
+DistanceSensor distanceF = DistanceSensor(8, A0);
+
+//左侧距离传感器
+DistanceSensor distanceL = DistanceSensor(9, A1);
+
+//右侧距离传感器
+DistanceSensor distanceR = DistanceSensor(10, A2);
+
+void Init()
 {
     BlueTeeth.Init();
     motorL.Init();
     motorR.Init();
+    ligetSensor.Init();
+    distanceF.Init();
+    distanceL.Init();
+    distanceR.Init();
+}
+
+void setup()
+{
+    Init();
     motorL.SetSpeed(100);
     motorR.SetSpeed(200);
-    ligetSensor.Init();
 }
 
 void loop()
