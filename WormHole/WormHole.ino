@@ -110,6 +110,7 @@ class LigetSensor
 public:
     LigetSensor()
     {
+        
     }
 
     void Init()
@@ -120,16 +121,16 @@ public:
         Wire.endTransmission();
     }
 
-    double GetLux()
+    uint16_t GetLux()
     {
-        char temp[2] = {};
+        uint16_t temp = 0;
         Wire.beginTransmission(0x13);
         Wire.write(0x10);
         Wire.endTransmission();
         delay(180);
         Wire.requestFrom(0x13, 2);
-        Wire.readBytes(temp, 2);
-        return (uint16_t)((temp[0] << 8) | temp[1]) / 1.2;
+        Wire.readBytes((char*)&temp, 2);
+        return temp;
     }
 };
 
@@ -158,7 +159,6 @@ void setup()
     motorL.SetSpeed(100);
     motorR.SetSpeed(200);
     ligetSensor.Init();
-
 }
 
 void loop()
