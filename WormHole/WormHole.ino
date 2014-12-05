@@ -113,6 +113,7 @@ public:
         
     }
 
+    //初始化
     void Init()
     {
         Wire.begin();
@@ -121,6 +122,7 @@ public:
         Wire.endTransmission();
     }
 
+    //获取光强
     uint16_t GetLux()
     {
         uint16_t temp = 0;
