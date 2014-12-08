@@ -107,19 +107,19 @@ public:
     //初始化
     void Init()
     {
-        Serial.begin(speed);
+        Serial1.begin(speed);
     }
 
     //从串口获取一个字节
     byte GetByte()
     {
-        return Serial.read();
+        return Serial1.read();
     }
 
     //向串口发送一个字节
     void SentByte(byte val)
     {
-        Serial.write(val);
+        Serial1.write(val);
     }
 
 private:
