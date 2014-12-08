@@ -110,16 +110,74 @@ public:
         Serial1.begin(speed);
     }
 
-    //从串口获取一个字节
+    //返回缓冲区存有的字节数
+    int GetAvailable()
+    {
+        return Serial1.available();
+    }
+
+    //返回缓冲区第一个字节，缓冲区为空时返回 0
     byte GetByte()
     {
-        return Serial1.read();
+        if (Serial1.available())
+        {
+            return Serial1.read();
+        }
+        return 0;
     }
 
     //向串口发送一个字节
     void SentByte(byte val)
     {
         Serial1.write(val);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(const char* val)
+    {
+        Serial1.println(val);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(char val)
+    {
+        Serial1.println(val);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(unsigned char val,int base=10)
+    {
+        Serial1.println(val,base);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(int val, int base = 10)
+    {
+        Serial1.println(val, base);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(unsigned int val, int base=10)
+    {
+        Serial1.println(val,base);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(long val,int base=10)
+    {
+        Serial1.println(val,base);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(unsigned long val, int base = 10)
+    {
+        Serial1.println(val,base);
+    }
+
+    //向串口发送数据的字符串形式
+    void PrintLn(double val,int length=6)
+    {
+        Serial1.println(val,length);
     }
 
 private:
