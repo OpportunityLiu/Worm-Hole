@@ -337,6 +337,7 @@ void setup()
 }
 
 #ifdef abc
+
 void loop()
 {
     byte box;
@@ -387,9 +388,12 @@ void loop()
 
 
 }
-#endif
+
+#else
 
 void loop()
 {
     blueTeeth.SentByte(blueTeeth.GetByte());
 }
+
+#endif
