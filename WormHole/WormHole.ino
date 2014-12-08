@@ -1,3 +1,12 @@
+#define bit0 0x01
+#define bit1 0x02
+#define bit2 0x04
+#define bit3 0x08
+#define bit4 0x10
+#define bit5 0x20
+#define bit6 0x40
+#define bit7 0x80
+
 
 #include "Wire\Wire.h"
 
@@ -117,10 +126,10 @@ private:
     uint32_t speed;
 };
 
-class LigetSensor
+class LightSensor
 {
 public:
-    LigetSensor()
+    LightSensor()
     {
     }
 
@@ -164,7 +173,7 @@ public:
     void SetDirection(int8_t val)
     {
         direction = val;
-        analogWrite(pin, val + 128);
+        analogWrite(pinDirection, val + 128);
     }
 
     //获取舵机方向，-128~127
@@ -175,7 +184,7 @@ public:
 
 private:
     const int i2cadd = 0x13;
-    const pin pin = 11;
+    const pin pinDirection = 11;
     int8_t direction;
 };
 
@@ -208,10 +217,10 @@ private:
 
 
 //光线传感器
-LigetSensor ligetSensor = LigetSensor();
+LightSensor lightSensor = LightSensor();
 
 //蓝牙串口
-UART BlueTeeth = UART(9600);
+UART blueTeeth = UART(9600);
 
 //左侧电机
 Motor motorL = Motor(6, 7, 5, 13, InterruptL);
@@ -238,10 +247,10 @@ DistanceSensor distanceR = DistanceSensor(10, A2);
 
 void Init()
 {
-    BlueTeeth.Init();
+    blueTeeth.Init();
     motorL.Init();
     motorR.Init();
-    ligetSensor.Init();
+    lightSensor.Init();
     distanceF.Init();
     distanceL.Init();
     distanceR.Init();
@@ -250,10 +259,71 @@ void Init()
 void setup()
 {
     Init();
-    motorL.SetSpeed(100);
-    motorR.SetSpeed(200);
+    //motorL.SetSpeed(100);
+    //motorR.SetSpeed(200);
 }
+#ifdef abc
+void loop()
+{
+
+	byte box;
+	box = blueTeeth.GetByte();
+	if (box&bit7)
+	{
+		int a,b,c;
+		if (box&bit4) a = 1;
+		else a = -1;
+		if (box&bit3) b = 1;
+		else b = -1;
+		if (box&bit2) c = 100;
+		else c = 0;
+		motorL.SetSpeed(a*c);
+		motorR.SetSpeed(b*c);
+	}
+
+	if (box&bit6)
+	{
+		int i,j,k,maxLux=0;
+		for (i = -12; i<=12; i++)
+		{
+			lightSensor.SetDirection(i*10);
+			delay(100);
+			j = lightSensor.GetLuxL();
+			if (j>maxLux) 
+			{
+				maxLux = j;
+				k = i;
+			};
+		};
+
+		lightSensor.SetDirection(0);
+		if (k<0)
+		{
+			motorL.SetSpeed(-100);
+			motorR.SetSpeed(100);
+		};
+		if (k>0)
+		{
+			motorL.SetSpeed(100);
+			motorR.SetSpeed(-100);
+		};
+		while (lightSensor.GetLuxL()<maxLux-10);
+		motorL.SetSpeed(200);
+		motorR.SetSpeed(200);
+	}
+
+
+
+
+
+
+
+
+
+}
+#endif
 
 void loop()
 {
+	blueTeeth.SentByte(blueTeeth.GetByte());
 }
