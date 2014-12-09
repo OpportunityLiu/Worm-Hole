@@ -76,13 +76,13 @@ public:
     }
 
     //获取路程，以码盘转过的齿数计算（只增不减）
-    uint64_t GetDistance()
+    unsigned long GetDistance()
     {
         return distance;
     }
 
     //获取位移，以码盘转过的齿数计算（正向前进增加，反向前进减小）
-    int64_t GetRange()
+    long GetRange()
     {
         return range;
     }
@@ -90,8 +90,8 @@ public:
 private:
     pin pmw, low, high, speed;
     int motorspeed;
-    uint64_t distance;
-    int64_t range;
+    unsigned long distance;
+    long range;
     void(*distanceCallback)();
 };
 
@@ -191,6 +191,12 @@ public:
     size_t PrintLn(double val, int length = 6)
     {
         return Serial1.println(val, length);
+    }
+
+    //向串口发送数据的字符串形式，返回值为实际发送的字节数
+    size_t PrintLn()
+    {
+        return Serial1.println();
     }
 
 private:
@@ -416,6 +422,61 @@ void ModeFindLight(byte message)
 
 void SendState(byte message)
 {
+    if (bitRead(message, 5))
+    {
+        //lightSensor
+        blueTeeth.PrintLn("Light sensor:");
+        blueTeeth.PrintLn("direction:");
+        blueTeeth.PrintLn(lightSensor.GetDirection());
+        blueTeeth.PrintLn("lux:");
+        blueTeeth.PrintLn(lightSensor.GetLuxL());
+        blueTeeth.PrintLn();
+    }
+    if (bitRead(message, 4))
+    {
+        //motorL
+        blueTeeth.PrintLn("Left motor:");
+        blueTeeth.PrintLn("speed:");
+        blueTeeth.PrintLn(motorL.GetSpeed());
+        blueTeeth.PrintLn("distance:");
+        blueTeeth.PrintLn(motorL.GetDistance());
+        blueTeeth.PrintLn("distance:");
+        blueTeeth.PrintLn(motorL.GetDistance());
+        blueTeeth.PrintLn();
+    }
+    if (bitRead(message, 3))
+    {
+        //motolR
+        blueTeeth.PrintLn("Right motor:");
+        blueTeeth.PrintLn("speed:");
+        blueTeeth.PrintLn(motorR.GetSpeed());
+        blueTeeth.PrintLn("distance:");
+        blueTeeth.PrintLn(motorR.GetDistance());
+        blueTeeth.PrintLn("distance:");
+        blueTeeth.PrintLn(motorR.GetDistance());
+        blueTeeth.PrintLn();
+    }
+    if (bitRead(message, 2))
+    {
+        //distanceF
+        blueTeeth.PrintLn("Front distance sensor:");
+        blueTeeth.PrintLn(distanceF.GetDistance());
+        blueTeeth.PrintLn();
+    }
+    if (bitRead(message, 1))
+    {
+        //distanceL
+        blueTeeth.PrintLn("Left distance sensor:");
+        blueTeeth.PrintLn(distanceL.GetDistance());
+        blueTeeth.PrintLn();
+    }
+    if (bitRead(message, 0))
+    {
+        //distanceR}
+        blueTeeth.PrintLn("Right distance sensor:");
+        blueTeeth.PrintLn(distanceR.GetDistance());
+        blueTeeth.PrintLn();
+    }
 }
 
 void setup()
