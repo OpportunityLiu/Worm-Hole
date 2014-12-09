@@ -22,6 +22,12 @@ public:
         
     }
 
+    //析构函数
+    ~Motor()
+    {
+        detachInterrupt(speed);
+    }
+
     //初始化
     void Init()
     {
@@ -195,8 +201,17 @@ private:
 class LightSensor
 {
 public:
+    //构造函数
     LightSensor()
     {
+    }
+
+    //析构函数
+    ~LightSensor()
+    {
+        Wire.beginTransmission(i2cadd);
+        Wire.write(codePowerDown);
+        Wire.endTransmission();
     }
 
     //初始化
@@ -204,7 +219,7 @@ public:
     {
         Wire.begin();
         Wire.beginTransmission(i2cadd);
-        Wire.write(codeBegin);
+        Wire.write(codePowerOn);
         Wire.endTransmission();
         SetDirection(0);
     }
@@ -214,7 +229,7 @@ public:
     {
         uint16_t temp = 0;
         Wire.beginTransmission(i2cadd);
-        Wire.write(codeL);
+        Wire.write(codeLResolution);
         Wire.endTransmission();
         delay(24);
         Wire.requestFrom(i2cadd, 2);
@@ -227,7 +242,7 @@ public:
     {
         uint16_t temp = 0;
         Wire.beginTransmission(i2cadd);
-        Wire.write(codeH);
+        Wire.write(codeHResolution);
         Wire.endTransmission();
         delay(180);
         Wire.requestFrom(i2cadd, 2);
@@ -252,9 +267,10 @@ private:
     const int i2cadd = 0x13;
     enum optionCode
     {
-        codeBegin = 0x01,
-        codeH = 0x10,
-        codeL = 0x13
+        codePowerDown = 0x00,
+        codePowerOn = 0x01,
+        codeHResolution = 0x10,
+        codeLResolution = 0x13
     };
     const pin pinDirection = 11;
     int8_t direction;
@@ -264,12 +280,14 @@ private:
 class DistanceSensor
 {
 public:
+    //构造函数
     DistanceSensor(pin pin_trig, pin pin_echo)
     {
         trig = pin_trig;
         echo = pin_echo;
     }
 
+    //初始化
     void Init()
     {
         pinMode(trig, OUTPUT);
@@ -336,7 +354,7 @@ void setup()
     //motorR.SetSpeed(200);
 }
 
-#ifdef abc
+#ifndef abc
 
 void loop()
 {
