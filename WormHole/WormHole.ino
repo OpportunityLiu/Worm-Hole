@@ -297,6 +297,10 @@ DistanceSensor distanceL = DistanceSensor(9, A1);
 DistanceSensor distanceR = DistanceSensor(10, A2);
 
 //当前模式
+//  0 停止
+//  1 遥控
+//  2 直线
+//  3 寻光
 byte Mode = 0;
 
 //初始化函数
@@ -311,13 +315,15 @@ void Init()
     distanceR.Init();
 }
 
+//测试蓝牙链接
 void Test(byte message)
 {
     char out[20] = {0};
-    sprintf(out, "OK\n%X\n", message);
+    sprintf(out, "OK\n%#X\n", message);
     blueTeeth.Print(out);
 }
 
+//蓝牙遥控
 void ModeRemoteCtrl(byte message)
 {
     int8_t _speed = message << 4;
@@ -334,6 +340,7 @@ void ModeRemoteCtrl(byte message)
     }
 }
 
+//直线前进 AI
 void ModeStraight(byte message)
 {
     if (bitRead(message, 0))
@@ -342,6 +349,7 @@ void ModeStraight(byte message)
     }
 }
 
+//寻光 AI
 void ModeFindLight(byte message)
 {
     if (bitRead(message, 0))
@@ -376,6 +384,7 @@ void ModeFindLight(byte message)
     }
 }
 
+//发送状态至蓝牙
 void SendState(byte message)
 {
     if (bitRead(message, 5))
@@ -418,7 +427,7 @@ void SendState(byte message)
     }
     if (bitRead(message, 0))
     {
-        //distanceR}
+        //distanceR
         char out0[50] = {0};
         sprintf(out0, "Right distance sensor: %f\n\n", distanceR.GetDistance());
         blueTeeth.Print(out0);
