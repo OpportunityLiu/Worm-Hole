@@ -109,22 +109,26 @@ public:
     //ÉèÖÃËÙ¶È£¬-255~255
     void SetSpeed(int speed)
     {
-        if (speed > 255 || speed < -255)
+        if (speed > 0)
         {
-            return;
-        }
-        motorspeed = speed;
-        if (motorspeed >= 0)
-        {
+            speed += 50;
+            motorspeed = (speed > 255) ? 255 : speed;
             digitalWrite(high, HIGH);
             digitalWrite(low, LOW);
             analogWrite(pmw, motorspeed);
         }
-        else
+        else if (speed<0)
         {
+            speed -= 50;
+            motorspeed = (speed < -255) ? -255 : speed;
             digitalWrite(low, HIGH);
             digitalWrite(high, LOW);
             analogWrite(pmw, -motorspeed);
+        }
+        else
+        {
+            motorspeed = 0;
+            analogWrite(pmw, motorspeed);
         }
     }
 
