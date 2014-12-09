@@ -191,10 +191,12 @@ public:
     {
         uint16_t temp = 0;
         Wire.beginTransmission(i2cadd);
-        Wire.write(codeLResolution);
+        blueTeeth.SentByte(Wire.write(codeLResolution)+'0');
+        blueTeeth.SentByte('\n');
         Wire.endTransmission();
         delay(24);
-        Wire.requestFrom(i2cadd, 2);
+        blueTeeth.SentByte(Wire.requestFrom(i2cadd, 2)+'0');
+        blueTeeth.SentByte('\n');
         Wire.readBytes((char*)&temp, 2);
         return temp;
     }
@@ -440,7 +442,7 @@ void setup()
     Init();
 }
 
-//#define DEBUG
+#define DEBUG
 #ifndef DEBUG
 
 void loop()
@@ -521,7 +523,7 @@ void loop()
 
 void loop()
 {
-    blueTeeth.SentByte(blueTeeth.GetByte());
+    lightSensor.GetLuxL();
 }
 
 #endif
