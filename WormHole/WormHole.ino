@@ -19,7 +19,7 @@ public:
         distance = 0;
         range = 0;
         distanceCallback = callback;
-        
+
     }
 
     //析构函数
@@ -335,6 +335,9 @@ DistanceSensor distanceL = DistanceSensor(9, A1);
 //右侧距离传感器
 DistanceSensor distanceR = DistanceSensor(10, A2);
 
+//当前模式
+byte Mode = 0;
+
 //初始化函数
 void Init()
 {
@@ -347,33 +350,39 @@ void Init()
     distanceR.Init();
 }
 
-void setup()
+void Test(byte message)
 {
-    Init();
-    //motorL.SetSpeed(100);
-    //motorR.SetSpeed(200);
+    blueTeeth.PrintLn("OK");
+    blueTeeth.PrintLn(message, 2);
 }
 
-#ifndef abc
-
-void loop()
+void ModeRemoteCtrl(byte message)
 {
-    byte box;
-    box = blueTeeth.GetByte();
-    if (bitRead(box, 7))
+    int8_t _speed = message << 4;
+    int16_t speed = 2 * _speed + 16;
+    if (bitRead(message,4))
     {
-        int a, b, c;
-        if (bitRead(box, 4)) a = 1;
-        else a = -1;
-        if (bitRead(box, 3)) b = 1;
-        else b = -1;
-        if (bitRead(box, 2)) c = 100;
-        else c = 0;
-        motorL.SetSpeed(a*c);
-        motorR.SetSpeed(b*c);
+        //右轮
+        motorR.SetSpeed(speed);
     }
+    else
+    {
+        //左轮
+        motorL.SetSpeed(speed);
+    }
+}
 
-    if (bitRead(box, 6))
+void ModeStraight(byte message)
+{
+    if (bitRead(message,0))
+    {
+        //开始执行
+    }
+}
+
+void ModeFindLight(byte message)
+{
+    if (bitRead(message, 0))
     {
         int i, j, k, maxLux = 0;
         for (i = -12; i <= 12; i++)
@@ -403,8 +412,92 @@ void loop()
         motorL.SetSpeed(200);
         motorR.SetSpeed(200);
     }
+}
 
+void SendState(byte message)
+{
+}
 
+void setup()
+{
+    Init();
+}
+
+//#define DEBUG
+#ifndef DEBUG
+
+void loop()
+{
+    if (blueTeeth.GetAvailable())
+    {
+        //蓝牙指令
+        byte message = blueTeeth.GetByte();
+        if (bitRead(message, 7))
+        {
+            //1xxxxxxx
+            if (bitRead(message, 6))
+            {
+                //11xxxxxx
+                SendState(message);
+            }
+            else
+            {
+                //10xxxxxx
+                if (bitRead(message,5))
+                {
+                    //101xxxxx
+                    switch (Mode)
+                    {
+                    case 0x01:
+                        ModeRemoteCtrl(message);
+                        break;
+                    case 0x02:
+                        ModeStraight(message);
+                        break;
+                    case 0x03:
+                        ModeFindLight(message);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                else
+                {
+                    //100xxxxx
+                    switch (message)
+                    {
+                    case 0x80:
+                        Mode = 0x00;
+                        break;
+                    case 0x81:
+                        Mode = 0x01;
+                        break;
+                    case 0x82:
+                        Mode = 0x02;
+                        break;
+                    case 0x83:
+                        Mode = 0x03;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            //0xxxxxxx
+            if (bitRead(message, 6))
+            {
+                //01xxxxxx
+            }
+            else
+            {
+                //00xxxxxx
+                Test(message);
+            }
+        }
+    }
 }
 
 #else
