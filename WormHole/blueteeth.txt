@@ -1,0 +1,31 @@
+L7-L6
+    00 测试链接
+        返回 "OK\nxxxxxx"，xxxxxx为 L5-L0 的字符串格式
+    01 //待扩展
+    10 控制信息
+        L5
+            0 模式切换
+                L4-L0
+                    00000 全部停止
+                    00001 手动模式
+                    10000 直线模式
+                    10001 寻光模式
+            1 控制信息
+                手动模式L4
+                    0 左轮
+                    1 右轮
+                        L3-L0
+                            xxxx 速度设为 xxxx * 16 + 8
+                直线模式L4-L0
+                    10000 开始执行
+                    //待扩展
+                寻光模式L4-L0
+                    10000 开始执行
+                    //待扩展
+    11 状态获取，相应位为 1 则返回对应状态，如 L5-L0 为 111000 即返回 lisgtSensor motorL motorR 的状态
+        L5 lightSensor
+        L4 motorL
+        L3 motolR
+        L2 distanceF
+        L1 distanceL
+        L0 distanceR
