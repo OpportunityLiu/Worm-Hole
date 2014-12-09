@@ -131,11 +131,13 @@ public:
     //码盘转过相应齿数后返回
     void WaitDistance(uint32_t times)
     {
+        blueTeeth.SentByte('s');
         int state = digitalRead(speed);
         int newstate;
         int64_t i = -times;
         while (i<times)
         {
+            blueTeeth.SentByte('w');
             newstate = digitalRead(speed);
             if (state!=newstate)
             {
