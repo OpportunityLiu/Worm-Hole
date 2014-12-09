@@ -86,12 +86,6 @@ public:
         motorspeed = 0;
     }
 
-    //析构函数
-    ~Motor()
-    {
-        detachInterrupt(speed);
-    }
-
     //初始化
     void Init()
     {
@@ -418,43 +412,42 @@ void SendState(byte message)
     if (bitRead(message, 5))
     {
         //lightSensor
-        char out5[100] = {0};
-        sprintf(out5, "L:\n\td: %d\n\tl: %d\n\n", 
-                lightSensor.GetDirection(), lightSensor.GetLuxL());
+        char out5[50] = {0};
+        sprintf(out5, "L:\n\td: %d\n\tl: %d\n\n", lightSensor.GetDirection(), lightSensor.GetLuxL());
         blueTeeth.Print(out5);
     }
     if (bitRead(message, 4))
     {
         //motorL
-        char out4[50] = {0};
+        char out4[15] = {0};
         sprintf(out4, "LM: %d\n\n", motorL.GetSpeed());
         blueTeeth.Print(out4);
     }
     if (bitRead(message, 3))
     {
         //motolR
-        char out3[50] = {0};
+        char out3[15] = {0};
         sprintf(out3, "RM: %d\n\n", motorR.GetSpeed());
         blueTeeth.Print(out3);
     }
     if (bitRead(message, 2))
     {
         //distanceF
-        char out2[50] = {0};
+        char out2[25] = {0};
         sprintf(out2, "FD: %lu\n\n", distanceF.GetDistance());
         blueTeeth.Print(out2);
     }
     if (bitRead(message, 1))
     {
         //distanceL
-        char out1[50] = {0};
+        char out1[25] = {0};
         sprintf(out1, "LD: %lu\n\n", distanceL.GetDistance());
         blueTeeth.Print(out1);
     }
     if (bitRead(message, 0))
     {
         //distanceR
-        char out0[50] = {0};
+        char out0[25] = {0};
         sprintf(out0, "RD: %lu\n\n", distanceR.GetDistance());
         blueTeeth.Print(out0);
     }
