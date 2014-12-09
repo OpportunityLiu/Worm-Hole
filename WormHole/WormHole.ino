@@ -257,8 +257,10 @@ public:
     //测试距离，单位为 mm
     double GetDistance()
     {
+        digitalWrite(trig, LOW);
+        delayMicroseconds(2);
         digitalWrite(trig, HIGH);
-        delay(1);
+        delayMicroseconds(15);
         digitalWrite(trig, LOW);
         return (double)pulseIn(echo, HIGH, 60000) * 0.17;
     }
@@ -268,7 +270,7 @@ private:
 };
 
 //前方距离传感器
-DistanceSensor distanceF = DistanceSensor(8, A0);
+DistanceSensor distanceF = DistanceSensor(8, 10);
 
 //左侧距离传感器
 DistanceSensor distanceL = DistanceSensor(9, A1);
