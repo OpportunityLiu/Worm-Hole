@@ -252,6 +252,7 @@ public:
     void Init()
     {
         pinMode(trig, OUTPUT);
+        pinMode(echo, INPUT);
     }
 
     //测试距离，单位为 um
@@ -270,13 +271,13 @@ private:
 };
 
 //前方距离传感器
-DistanceSensor distanceF = DistanceSensor(8, 11);
+DistanceSensor distanceF = DistanceSensor(8, 9);
 
 //左侧距离传感器
-DistanceSensor distanceL = DistanceSensor(9, A1);
+DistanceSensor distanceL = DistanceSensor(10, 11);
 
 //右侧距离传感器
-DistanceSensor distanceR = DistanceSensor(10, A2);
+DistanceSensor distanceR = DistanceSensor(12, 13);
 
 //当前模式
 //  0 停止
