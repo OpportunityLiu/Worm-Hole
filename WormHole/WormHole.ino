@@ -142,6 +142,7 @@ public:
     //向串口发送一个字节
     void SentByte(byte val)
     {
+		delay(70);
         Serial1.write(val);
     }
 
@@ -158,6 +159,9 @@ public:
 private:
     uint32_t speed;
 };
+
+//蓝牙串口
+BlueTeeth blueTeeth = BlueTeeth(9600);
 
 //环境光传感器
 class LightSensor
@@ -228,7 +232,7 @@ public:
     }
 
 private:
-    const int i2cadd = 0x13;
+    const int i2cadd = 0x23;
     enum optionCode
     {
         codePowerDown = 0x00,
@@ -273,8 +277,7 @@ private:
 //环境光传感器
 LightSensor lightSensor = LightSensor();
 
-//蓝牙串口
-BlueTeeth blueTeeth = BlueTeeth(9600);
+
 
 //左侧电机
 Motor motorL = Motor(6, 5, 7, 13, InterruptL);
