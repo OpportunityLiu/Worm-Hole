@@ -150,6 +150,7 @@ public:
     {
         for (char* i = (char*)val; *i != '\0'; i++)
         {
+			delay(70);
             Serial1.write(*i);
         }
     }
@@ -391,7 +392,7 @@ void SendState(byte message)
     {
         //lightSensor
         char out5[100] = {0};
-        sprintf(out5, "Light sensor:\n\tdirection: %d\n\tlux: %d\n\n", 
+        sprintf(out5, "Light:\n\tdire: %d\n\tlux: %d\n\n", 
                 lightSensor.GetDirection(), lightSensor.GetLuxL());
         blueTeeth.Print(out5);
     }
@@ -399,7 +400,7 @@ void SendState(byte message)
     {
         //motorL
         char out4[200] = {0};
-        sprintf(out4, "Left motor:\n\tspeed: %d\n\tdistance: %u\n\trange: %d\n\n", 
+        sprintf(out4, "L_motor:\n\tspe: %d\n\tdist: %u\n\trange: %d\n\n", 
                 motorL.GetSpeed(), motorL.GetDistance(), motorL.GetRange());
         blueTeeth.Print(out4);
     }
@@ -407,7 +408,7 @@ void SendState(byte message)
     {
         //motolR
         char out3[200] = {0};
-        sprintf(out3, "Right motor:\n\tspeed: %d\n\tdistance: %u\n\trange: %d\n\n", 
+        sprintf(out3, "R_motor:\n\tspe: %d\n\tdist: %u\n\trange: %d\n\n", 
                 motorR.GetSpeed(), motorR.GetDistance(), motorR.GetRange());
         blueTeeth.Print(out3);
     }
@@ -415,21 +416,21 @@ void SendState(byte message)
     {
         //distanceF
         char out2[50] = {0};
-        sprintf(out2, "Front distance sensor: %f\n\n", distanceF.GetDistance());
+        sprintf(out2, "F_dist: %f\n\n", distanceF.GetDistance());
         blueTeeth.Print(out2);
     }
     if (bitRead(message, 1))
     {
         //distanceL
         char out1[50] = {0};
-        sprintf(out1, "Left distance sensor: %f\n\n", distanceL.GetDistance());
+        sprintf(out1, "L_dist: %f\n\n", distanceL.GetDistance());
         blueTeeth.Print(out1);
     }
     if (bitRead(message, 0))
     {
         //distanceR
         char out0[50] = {0};
-        sprintf(out0, "Right distance sensor: %f\n\n", distanceR.GetDistance());
+        sprintf(out0, "R_dist: %f\n\n", distanceR.GetDistance());
         blueTeeth.Print(out0);
     }
 }
