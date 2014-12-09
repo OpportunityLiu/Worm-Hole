@@ -148,54 +148,63 @@ public:
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(const char* val)
     {
+        delay(10);
         return Serial1.println(val);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(char val)
     {
+        delay(10);
         return Serial1.println(val);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(unsigned char val, int base = 10)
     {
+        delay(10);
         return Serial1.println(val, base);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(int val, int base = 10)
     {
+        delay(10);
         return Serial1.println(val, base);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(unsigned int val, int base = 10)
     {
+        delay(10);
         return Serial1.println(val, base);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(long val, int base = 10)
     {
+        delay(10);
         return Serial1.println(val, base);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(unsigned long val, int base = 10)
     {
+        delay(10);
         return Serial1.println(val, base);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn(double val, int length = 6)
     {
+        delay(10);
         return Serial1.println(val, length);
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
     size_t PrintLn()
     {
+        delay(10);
         return Serial1.println();
     }
 
@@ -366,7 +375,7 @@ void ModeRemoteCtrl(byte message)
 {
     int8_t _speed = message << 4;
     int16_t speed = 2 * _speed + 16;
-    if (bitRead(message,4))
+    if (bitRead(message, 4))
     {
         //右轮
         motorR.SetSpeed(speed);
@@ -380,7 +389,7 @@ void ModeRemoteCtrl(byte message)
 
 void ModeStraight(byte message)
 {
-    if (bitRead(message,0))
+    if (bitRead(message, 0))
     {
         //开始执行
     }
@@ -504,7 +513,7 @@ void loop()
             else
             {
                 //10xxxxxx
-                if (bitRead(message,5))
+                if (bitRead(message, 5))
                 {
                     //101xxxxx
                     switch (Mode)
