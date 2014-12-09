@@ -274,14 +274,14 @@ LightSensor lightSensor = LightSensor();
 BlueTeeth blueTeeth = BlueTeeth(9600);
 
 //左侧电机
-Motor motorL = Motor(6, 7, 5, 13, InterruptL);
+Motor motorL = Motor(6, 5, 7, 13, InterruptL);
 void InterruptL()
 {
     motorL.DistanceMeasure();
 }
 
 //右侧电机
-Motor motorR = Motor(3, 4, 2, 12, InterruptR);
+Motor motorR = Motor(3, 2, 4, 12, InterruptR);
 void InterruptR()
 {
     motorR.DistanceMeasure();
