@@ -254,15 +254,15 @@ public:
         pinMode(trig, OUTPUT);
     }
 
-    //测试距离，单位为 mm
-    double GetDistance()
+    //测试距离，单位为 um
+    unsigned long GetDistance()
     {
         digitalWrite(trig, LOW);
         delayMicroseconds(2);
         digitalWrite(trig, HIGH);
-        delayMicroseconds(15);
+        delayMicroseconds(10);
         digitalWrite(trig, LOW);
-        return (double)pulseIn(echo, HIGH, 60000) * 0.17;
+        return pulseIn(echo, HIGH, 60000UL) * 170;
     }
 
 private:
@@ -270,7 +270,7 @@ private:
 };
 
 //前方距离传感器
-DistanceSensor distanceF = DistanceSensor(8, 10);
+DistanceSensor distanceF = DistanceSensor(8, 11);
 
 //左侧距离传感器
 DistanceSensor distanceL = DistanceSensor(9, A1);
@@ -331,39 +331,80 @@ void ModeStraight(byte message)
     }
 }
 
+void seek_bright(){};
+void seek_void(){};
+bool side_ok(){};
+bool front_ok(){};
+void go(){};
+void stop(){};
+void left(){};
+void right(){};
+
 //寻光 AI
 void ModeFindLight(byte message)
 {
-    if (bitRead(message, 0))
-    {
-        int i, j, k, maxLux = 0;
-        for (i = -12; i <= 12; i++)
-        {
-            lightSensor.SetDirection(i * 10);
-            delay(100);
-            j = lightSensor.GetLuxL();
-            if (j > maxLux)
-            {
-                maxLux = j;
-                k = i;
-            };
-        };
+	//int i, j, k, maxLux = 0;
+ //   for (i = -12; i <= 12; i++)
+ //   {
+	//	lightSensor.SetDirection(i * 10);
+ //       delay(100);
+ //       j = lightSensor.GetLuxL();
+ //      if (j > maxLux)
+ //           {
+ //               maxLux = j;
+ //               k = i;
+ //           };
+ //   };
 
-        lightSensor.SetDirection(0);
-        if (k < 0)
-        {
-            motorL.SetSpeed(-100);
-            motorR.SetSpeed(100);
-        };
-        if (k > 0)
-        {
-            motorL.SetSpeed(100);
-            motorR.SetSpeed(-100);
-        };
-        while (lightSensor.GetLuxL() < maxLux - 10);
-        motorL.SetSpeed(200);
-        motorR.SetSpeed(200);
-    }
+ //       lightSensor.SetDirection(0);
+ //       if (k < 0)
+ //       {
+ //           motorL.SetSpeed(-100);
+ //           motorR.SetSpeed(100);
+ //       };
+ //       if (k > 0)
+ //       {
+ //           motorL.SetSpeed(100);
+ //           motorR.SetSpeed(-100);
+ //       };
+ //       while (lightSensor.GetLuxL() < maxLux - 5);
+ //       motorL.SetSpeed(200);
+ //       motorR.SetSpeed(200);
+	int nb = 0;
+	bool box,re;
+	while(1)
+	{
+		seek_bright();
+		go();
+		if(!front_ok) seek_void();
+		go();
+		while (front_ok())
+		{
+			do
+			{
+				box = side_ok();
+			}while((!box)||front_ok());
+			if (!front_ok()) 
+			{
+				if (nb>2) 
+				{
+					nb = 0;
+					re = true;
+					break;
+				};
+				nb++; 
+				continue;
+			};
+			if (re) { re = false; continue;};
+			go(); delay(1000); stop();
+			break;
+		};
+		continue;
+	};
+
+
+	//}
+ //   
 }
 
 //发送状态至蓝牙
@@ -395,21 +436,21 @@ void SendState(byte message)
     {
         //distanceF
         char out2[50] = {0};
-        sprintf(out2, "F_dist: %f\n\n", distanceF.GetDistance());
+        sprintf(out2, "F_dist: %lu\n\n", distanceF.GetDistance());
         blueTeeth.Print(out2);
     }
     if (bitRead(message, 1))
     {
         //distanceL
         char out1[50] = {0};
-        sprintf(out1, "L_dist: %f\n\n", distanceL.GetDistance());
+        sprintf(out1, "L_dist: %lu\n\n", distanceL.GetDistance());
         blueTeeth.Print(out1);
     }
     if (bitRead(message, 0))
     {
         //distanceR
         char out0[50] = {0};
-        sprintf(out0, "R_dist: %f\n\n", distanceR.GetDistance());
+        sprintf(out0, "R_dist: %lu\n\n", distanceR.GetDistance());
         blueTeeth.Print(out0);
     }
 }
@@ -419,7 +460,7 @@ void setup()
     Init();
 }
 
-#define DEBUG
+//#define DEBUG
 #ifndef DEBUG
 
 void loop()
