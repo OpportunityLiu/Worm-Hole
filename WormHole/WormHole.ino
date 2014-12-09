@@ -77,17 +77,13 @@ class Motor
 {
 public:
     //构造函数
-    Motor(pin pin_pmw, pin pin_low, pin pin_high, pin pin_speed, void(*callback)())
+    Motor(pin pin_pmw, pin pin_low, pin pin_high, pin pin_speed)
     {
         pmw = pin_pmw;
         high = pin_high;
         low = pin_low;
         speed = pin_speed;
         motorspeed = 0;
-        distance = 0;
-        range = 0;
-        distanceCallback = callback;
-
     }
 
     //析构函数
@@ -101,7 +97,6 @@ public:
     {
         pinMode(low, OUTPUT);
         pinMode(high, OUTPUT);
-        attachInterrupt(speed, distanceCallback, RISING);
         SetSpeed(0);
     }
 
@@ -133,50 +128,34 @@ public:
         }
     }
 
-    //修改路程计数，在中断函数中调用
-    void DistanceMeasure()
+    //码盘转过相应齿数后返回
+    void WaitDistance(uint32_t times)
     {
-        distance++;
-        if (speed >= 0)
-            range++;
-        else
-            range--;
-    }
-
-    //获取路程，以码盘转过的齿数计算（只增不减）
-    unsigned long GetDistance()
-    {
-        return distance;
-    }
-
-    //获取位移，以码盘转过的齿数计算（正向前进增加，反向前进减小）
-    long GetRange()
-    {
-        return range;
+        int state = digitalRead(speed);
+        int newstate;
+        int64_t i = -times;
+        while (i<times)
+        {
+            newstate = digitalRead(speed);
+            if (state!=newstate)
+            {
+                state = newstate;
+                i++;
+                blueTeeth.SentByte('+');
+            }
+        }
     }
 
 private:
     pin pmw, low, high, speed;
     int motorspeed;
-    unsigned long distance;
-    long range;
-    void(*distanceCallback)();
 };
 
 //左侧电机
-Motor motorL = Motor(6, 5, 7, 13, InterruptL);
-void InterruptL()
-{
-    motorL.DistanceMeasure();
-}
+Motor motorL = Motor(6, 5, 7, 13);
 
 //右侧电机
-Motor motorR = Motor(3, 2, 4, 12, InterruptR);
-void InterruptR()
-{
-    motorR.DistanceMeasure();
-}
-
+Motor motorR = Motor(3, 2, 4, 12);
 //环境光传感器
 class LightSensor
 {
@@ -400,17 +379,15 @@ void SendState(byte message)
     if (bitRead(message, 4))
     {
         //motorL
-        char out4[200] = {0};
-        sprintf(out4, "L_motor:\n\tspe: %d\n\tdist: %u\n\trange: %d\n\n", 
-                motorL.GetSpeed(), motorL.GetDistance(), motorL.GetRange());
+        char out4[50] = {0};
+        sprintf(out4, "L_motor: %d\n\n", motorL.GetSpeed());
         blueTeeth.Print(out4);
     }
     if (bitRead(message, 3))
     {
         //motolR
-        char out3[200] = {0};
-        sprintf(out3, "R_motor:\n\tspe: %d\n\tdist: %u\n\trange: %d\n\n", 
-                motorR.GetSpeed(), motorR.GetDistance(), motorR.GetRange());
+        char out3[50] = {0};
+        sprintf(out3, "R_motor: %d\n\n", motorR.GetSpeed());
         blueTeeth.Print(out3);
     }
     if (bitRead(message, 2))
@@ -441,7 +418,7 @@ void setup()
     Init();
 }
 
-//#define DEBUG
+#define DEBUG
 #ifndef DEBUG
 
 void loop()
@@ -522,7 +499,7 @@ void loop()
 
 void loop()
 {
-    lightSensor.GetLuxL();
+    motorL.WaitDistance(1000);
 }
 
 #endif
