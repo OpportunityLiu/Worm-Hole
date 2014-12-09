@@ -139,73 +139,19 @@ public:
         return Serial1.readBytes(buffer, length);
     }
 
-    //向串口发送一个字节，返回值为实际发送的字节数
-    size_t SentByte(byte val)
+    //向串口发送一个字节
+    void SentByte(byte val)
     {
-        return Serial1.write(val);
+        Serial1.write(val);
     }
 
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(const char* val)
+    //向串口发送数据的字符串形式
+    void Print(const char* val)
     {
-        delay(10);
-        return Serial1.println(val);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(char val)
-    {
-        delay(10);
-        return Serial1.println(val);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(unsigned char val, int base = 10)
-    {
-        delay(10);
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(int val, int base = 10)
-    {
-        delay(10);
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(unsigned int val, int base = 10)
-    {
-        delay(10);
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(long val, int base = 10)
-    {
-        delay(10);
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(unsigned long val, int base = 10)
-    {
-        delay(10);
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(double val, int length = 6)
-    {
-        delay(10);
-        return Serial1.println(val, length);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn()
-    {
-        delay(10);
-        return Serial1.println();
+        for (char* i = (char*)val; *i != '\0'; i++)
+        {
+            Serial1.write(*i);
+        }
     }
 
 private:
@@ -367,8 +313,9 @@ void Init()
 
 void Test(byte message)
 {
-    blueTeeth.PrintLn("OK");
-    blueTeeth.PrintLn(message, 2);
+    char out[20] = {0};
+    sprintf(out, "OK\n%X\n", message);
+    blueTeeth.Print(out);
 }
 
 void ModeRemoteCtrl(byte message)
@@ -434,57 +381,47 @@ void SendState(byte message)
     if (bitRead(message, 5))
     {
         //lightSensor
-        blueTeeth.PrintLn("Light sensor:");
-        blueTeeth.PrintLn("direction:");
-        blueTeeth.PrintLn(lightSensor.GetDirection());
-        blueTeeth.PrintLn("lux:");
-        blueTeeth.PrintLn(lightSensor.GetLuxL());
-        blueTeeth.PrintLn();
+        char out5[100] = {0};
+        sprintf(out5, "Light sensor:\n\tdirection: %d\n\tlux: %d\n\n", 
+                lightSensor.GetDirection(), lightSensor.GetLuxL());
+        blueTeeth.Print(out5);
     }
     if (bitRead(message, 4))
     {
         //motorL
-        blueTeeth.PrintLn("Left motor:");
-        blueTeeth.PrintLn("speed:");
-        blueTeeth.PrintLn(motorL.GetSpeed());
-        blueTeeth.PrintLn("distance:");
-        blueTeeth.PrintLn(motorL.GetDistance());
-        blueTeeth.PrintLn("distance:");
-        blueTeeth.PrintLn(motorL.GetDistance());
-        blueTeeth.PrintLn();
+        char out4[200] = {0};
+        sprintf(out4, "Left motor:\n\tspeed: %d\n\tdistance: %u\n\trange: %d\n\n", 
+                motorL.GetSpeed(), motorL.GetDistance(), motorL.GetRange());
+        blueTeeth.Print(out4);
     }
     if (bitRead(message, 3))
     {
         //motolR
-        blueTeeth.PrintLn("Right motor:");
-        blueTeeth.PrintLn("speed:");
-        blueTeeth.PrintLn(motorR.GetSpeed());
-        blueTeeth.PrintLn("distance:");
-        blueTeeth.PrintLn(motorR.GetDistance());
-        blueTeeth.PrintLn("distance:");
-        blueTeeth.PrintLn(motorR.GetDistance());
-        blueTeeth.PrintLn();
+        char out3[200] = {0};
+        sprintf(out3, "Right motor:\n\tspeed: %d\n\tdistance: %u\n\trange: %d\n\n", 
+                motorR.GetSpeed(), motorR.GetDistance(), motorR.GetRange());
+        blueTeeth.Print(out3);
     }
     if (bitRead(message, 2))
     {
         //distanceF
-        blueTeeth.PrintLn("Front distance sensor:");
-        blueTeeth.PrintLn(distanceF.GetDistance());
-        blueTeeth.PrintLn();
+        char out2[50] = {0};
+        sprintf(out2, "Front distance sensor: %f\n\n", distanceF.GetDistance());
+        blueTeeth.Print(out2);
     }
     if (bitRead(message, 1))
     {
         //distanceL
-        blueTeeth.PrintLn("Left distance sensor:");
-        blueTeeth.PrintLn(distanceL.GetDistance());
-        blueTeeth.PrintLn();
+        char out1[50] = {0};
+        sprintf(out1, "Left distance sensor: %f\n\n", distanceL.GetDistance());
+        blueTeeth.Print(out1);
     }
     if (bitRead(message, 0))
     {
         //distanceR}
-        blueTeeth.PrintLn("Right distance sensor:");
-        blueTeeth.PrintLn(distanceR.GetDistance());
-        blueTeeth.PrintLn();
+        char out0[50] = {0};
+        sprintf(out0, "Right distance sensor: %f\n\n", distanceR.GetDistance());
+        blueTeeth.Print(out0);
     }
 }
 
