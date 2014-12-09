@@ -419,7 +419,7 @@ void SendState(byte message)
     {
         //lightSensor
         char out5[100] = {0};
-        sprintf(out5, "Light:\n\tdire: %d\n\tlux: %d\n\n", 
+        sprintf(out5, "L:\n\td: %d\n\tl: %d\n\n", 
                 lightSensor.GetDirection(), lightSensor.GetLuxL());
         blueTeeth.Print(out5);
     }
@@ -427,35 +427,35 @@ void SendState(byte message)
     {
         //motorL
         char out4[50] = {0};
-        sprintf(out4, "L_motor: %d\n\n", motorL.GetSpeed());
+        sprintf(out4, "LM: %d\n\n", motorL.GetSpeed());
         blueTeeth.Print(out4);
     }
     if (bitRead(message, 3))
     {
         //motolR
         char out3[50] = {0};
-        sprintf(out3, "R_motor: %d\n\n", motorR.GetSpeed());
+        sprintf(out3, "RM: %d\n\n", motorR.GetSpeed());
         blueTeeth.Print(out3);
     }
     if (bitRead(message, 2))
     {
         //distanceF
         char out2[50] = {0};
-        sprintf(out2, "F_dist: %lu\n\n", distanceF.GetDistance());
+        sprintf(out2, "FD: %lu\n\n", distanceF.GetDistance());
         blueTeeth.Print(out2);
     }
     if (bitRead(message, 1))
     {
         //distanceL
         char out1[50] = {0};
-        sprintf(out1, "L_dist: %lu\n\n", distanceL.GetDistance());
+        sprintf(out1, "LD: %lu\n\n", distanceL.GetDistance());
         blueTeeth.Print(out1);
     }
     if (bitRead(message, 0))
     {
         //distanceR
         char out0[50] = {0};
-        sprintf(out0, "R_dist: %lu\n\n", distanceR.GetDistance());
+        sprintf(out0, "RD: %lu\n\n", distanceR.GetDistance());
         blueTeeth.Print(out0);
     }
 }
