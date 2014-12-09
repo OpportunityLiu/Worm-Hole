@@ -146,57 +146,11 @@ public:
     }
 
     //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(const char* val)
+    size_t Printf(const char* val)
     {
+		char* box;
+		sprintf(box,val);
         return Serial1.println(val);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(char val)
-    {
-        return Serial1.println(val);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(unsigned char val, int base = 10)
-    {
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(int val, int base = 10)
-    {
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(unsigned int val, int base = 10)
-    {
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(long val, int base = 10)
-    {
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(unsigned long val, int base = 10)
-    {
-        return Serial1.println(val, base);
-    }
-
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn(double val, int length = 6)
-    {
-        return Serial1.println(val, length);
-    }   
-    
-    //向串口发送数据的字符串形式，返回值为实际发送的字节数
-    size_t PrintLn()
-    {
-        return Serial1.println();
     }
 
 private:
