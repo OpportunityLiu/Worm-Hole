@@ -4,6 +4,74 @@
 //针脚定义
 typedef uint8_t pin;
 
+//蓝牙串口
+class BlueTeeth
+{
+public:
+    //构造函数
+    BlueTeeth(const uint32_t speed)
+    {
+        this->speed = speed;
+    }
+
+    //析构函数
+    ~BlueTeeth()
+    {
+        Serial1.end();
+    }
+
+    //初始化
+    void Init()
+    {
+        Serial1.begin(speed);
+    }
+
+    //返回缓冲区存有的字节数
+    int GetAvailable()
+    {
+        return Serial1.available();
+    }
+
+    //返回缓冲区第一个字节，缓冲区为空时返回 0
+    byte GetByte()
+    {
+        if (Serial1.available())
+        {
+            return Serial1.read();
+        }
+        return 0;
+    }
+
+    //返回缓冲区的多个字节，返回值为实际获取的字节数
+    size_t GetBytes(char* buffer, size_t length)
+    {
+        return Serial1.readBytes(buffer, length);
+    }
+
+    //向串口发送一个字节
+    void SentByte(byte val)
+    {
+		delay(70);
+        Serial1.write(val);
+    }
+
+    //向串口发送数据的字符串形式
+    void Print(const char* val)
+    {
+        for (char* i = (char*)val; *i != '\0'; i++)
+        {
+			delay(70);
+            Serial1.write(*i);
+        }
+    }
+
+private:
+    uint32_t speed;
+};
+
+//蓝牙串口
+BlueTeeth blueTeeth = BlueTeeth(9600);
+
 //驱动电机及码盘
 class Motor
 {
@@ -95,73 +163,19 @@ private:
     void(*distanceCallback)();
 };
 
-//蓝牙串口
-class BlueTeeth
+//左侧电机
+Motor motorL = Motor(6, 5, 7, 13, InterruptL);
+void InterruptL()
 {
-public:
-    //构造函数
-    BlueTeeth(const uint32_t speed)
-    {
-        this->speed = speed;
-    }
+    motorL.DistanceMeasure();
+}
 
-    //析构函数
-    ~BlueTeeth()
-    {
-        Serial1.end();
-    }
-
-    //初始化
-    void Init()
-    {
-        Serial1.begin(speed);
-    }
-
-    //返回缓冲区存有的字节数
-    int GetAvailable()
-    {
-        return Serial1.available();
-    }
-
-    //返回缓冲区第一个字节，缓冲区为空时返回 0
-    byte GetByte()
-    {
-        if (Serial1.available())
-        {
-            return Serial1.read();
-        }
-        return 0;
-    }
-
-    //返回缓冲区的多个字节，返回值为实际获取的字节数
-    size_t GetBytes(char* buffer, size_t length)
-    {
-        return Serial1.readBytes(buffer, length);
-    }
-
-    //向串口发送一个字节
-    void SentByte(byte val)
-    {
-		delay(70);
-        Serial1.write(val);
-    }
-
-    //向串口发送数据的字符串形式
-    void Print(const char* val)
-    {
-        for (char* i = (char*)val; *i != '\0'; i++)
-        {
-			delay(70);
-            Serial1.write(*i);
-        }
-    }
-
-private:
-    uint32_t speed;
-};
-
-//蓝牙串口
-BlueTeeth blueTeeth = BlueTeeth(9600);
+//右侧电机
+Motor motorR = Motor(3, 2, 4, 12, InterruptR);
+void InterruptR()
+{
+    motorR.DistanceMeasure();
+}
 
 //环境光传感器
 class LightSensor
@@ -195,12 +209,10 @@ public:
     {
         uint16_t temp = 0;
         Wire.beginTransmission(i2cadd);
-        blueTeeth.SentByte(Wire.write(codeLResolution)+'0');
-        blueTeeth.SentByte('\n');
+        Wire.write(codeLResolution);
         Wire.endTransmission();
         delay(24);
-        blueTeeth.SentByte(Wire.requestFrom(i2cadd, 2)+'0');
-        blueTeeth.SentByte('\n');
+        Wire.requestFrom(i2cadd, 2);
         Wire.readBytes((char*)&temp, 2);
         return temp;
     }
@@ -244,6 +256,9 @@ private:
     int8_t direction;
 };
 
+//环境光传感器
+LightSensor lightSensor = LightSensor();
+
 //距离传感器
 class DistanceSensor
 {
@@ -273,25 +288,6 @@ public:
 private:
     pin trig, echo;
 };
-
-//环境光传感器
-LightSensor lightSensor = LightSensor();
-
-
-
-//左侧电机
-Motor motorL = Motor(6, 5, 7, 13, InterruptL);
-void InterruptL()
-{
-    motorL.DistanceMeasure();
-}
-
-//右侧电机
-Motor motorR = Motor(3, 2, 4, 12, InterruptR);
-void InterruptR()
-{
-    motorR.DistanceMeasure();
-}
 
 //前方距离传感器
 DistanceSensor distanceF = DistanceSensor(8, A0);
@@ -445,7 +441,7 @@ void setup()
     Init();
 }
 
-#define DEBUG
+//#define DEBUG
 #ifndef DEBUG
 
 void loop()
