@@ -149,10 +149,10 @@ private:
 };
 
 //左侧电机
-Motor motorL = Motor(6, 5, 7, 13);
+Motor motorL = Motor(6, 5, 7, A1);
 
 //右侧电机
-Motor motorR = Motor(3, 2, 4, 12);
+Motor motorR = Motor(3, 2, 4, A0);
 //环境光传感器
 class LightSensor
 {
@@ -453,13 +453,13 @@ void SendState(byte message)
     }
 }
 
+#define DEBUG
+#ifndef DEBUG
+
 void setup()
 {
     Init();
 }
-
-//#define DEBUG
-#ifndef DEBUG
 
 void loop()
 {
@@ -537,9 +537,17 @@ void loop()
 
 #else
 
+void setup()
+{
+    Init();
+}
+
 void loop()
 {
-    motorL.WaitDistance(1000);
+    motorL.SetSpeed(200);
+    motorL.WaitDistance(2000);
+    motorL.SetSpeed(0);
+    delay(1000);
 }
 
 #endif
