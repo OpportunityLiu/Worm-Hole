@@ -91,6 +91,7 @@ public:
     {
         pinMode(low, OUTPUT);
         pinMode(high, OUTPUT);
+		pinMode(speed,INPUT);
         SetSpeed(0);
     }
 
@@ -149,10 +150,12 @@ private:
 };
 
 //左侧电机
-Motor motorL = Motor(6, 5, 7, A1);
+Motor motorL = Motor(5, 4, 2, A1);
+//Motor motorL = Motor(6, A4, A5, A1);
 
 //右侧电机
-Motor motorR = Motor(3, 2, 4, A0);
+//Motor motorR = Motor(3, 2, 4, A0);
+Motor motorR = Motor(3, A2, A3, A0);
 //环境光传感器
 class LightSensor
 {
@@ -228,7 +231,7 @@ private:
         codeHResolution = 0x10,
         codeLResolution = 0x13
     };
-    const pin pinDirection = 11;
+    const pin pinDirection = 6;
     int8_t direction;
 };
 
@@ -259,9 +262,9 @@ public:
         digitalWrite(trig, LOW);
         delayMicroseconds(2);
         digitalWrite(trig, HIGH);
-        delayMicroseconds(10);
+        delayMicroseconds(20);
         digitalWrite(trig, LOW);
-        return pulseIn(echo, HIGH, 60000UL) * 170;
+        return pulseIn(echo, HIGH) * 170;
     }
 
 private:
@@ -308,7 +311,7 @@ void Test(byte message)
 void ModeRemoteCtrl(byte message)
 {
     int8_t _speed = message << 4;
-    int16_t speed = 2 * _speed + 16;
+    int16_t speed = 2 * _speed;
     if (bitRead(message, 4))
     {
         //右轮
@@ -375,14 +378,12 @@ void ModeFindLight(byte message)
 	{
 		seek_bright();
 		go();
-		if(!front_ok) seek_void();
+		while (front_ok) {}; stop();
+		seek_void();
 		go();
-		while (front_ok())
+		while (1)
 		{
-			do
-			{
-				box = side_ok();
-			}while((!box)||front_ok());
+			while((!side_ok())||front_ok()) {}; stop();
 			if (!front_ok()) 
 			{
 				if (nb>2) 
@@ -392,13 +393,11 @@ void ModeFindLight(byte message)
 					break;
 				};
 				nb++; 
-				continue;
+				seek_void();
 			};
-			if (re) { re = false; continue;};
-			go(); delay(1000); stop();
-			break;
+			if (re) { re = false; break;};
+			go();
 		};
-		continue;
 	};
 
 
@@ -544,10 +543,12 @@ void setup()
 
 void loop()
 {
-    motorL.SetSpeed(200);
-    motorL.WaitDistance(2000);
-    motorL.SetSpeed(0);
-    delay(1000);
+	 //motorL.SetSpeed(200);
+	 //motorR.SetSpeed(200);
+	 //delay(1000);
+	 //motorL.SetSpeed(-200);
+	 //motorR.SetSpeed(-200);
+	 //delay(1000);
 }
 
 #endif
