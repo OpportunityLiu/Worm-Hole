@@ -8,65 +8,65 @@ typedef uint8_t pin;
 class BlueTeeth
 {
 public:
-    //构造函数
-    BlueTeeth(const uint32_t speed)
-    {
-        this->speed = speed;
-    }
+	//构造函数
+	BlueTeeth(const uint32_t speed)
+	{
+		this->speed = speed;
+	}
 
-    //析构函数
-    ~BlueTeeth()
-    {
-        Serial1.end();
-    }
+	//析构函数
+	~BlueTeeth()
+	{
+		Serial1.end();
+	}
 
-    //初始化
-    void Init()
-    {
-        Serial1.begin(speed);
-    }
+	//初始化
+	void Init()
+	{
+		Serial1.begin(speed);
+	}
 
-    //返回缓冲区存有的字节数
-    int GetAvailable()
-    {
-        return Serial1.available();
-    }
+	//返回缓冲区存有的字节数
+	int GetAvailable()
+	{
+		return Serial1.available();
+	}
 
-    //返回缓冲区第一个字节，缓冲区为空时返回 0
-    byte GetByte()
-    {
-        if (Serial1.available())
-        {
-            return Serial1.read();
-        }
-        return 0;
-    }
+	//返回缓冲区第一个字节，缓冲区为空时返回 0
+	byte GetByte()
+	{
+		if (Serial1.available())
+		{
+			return Serial1.read();
+		}
+		return 0;
+	}
 
-    //返回缓冲区的多个字节，返回值为实际获取的字节数
-    size_t GetBytes(char* buffer, size_t length)
-    {
-        return Serial1.readBytes(buffer, length);
-    }
+	//返回缓冲区的多个字节，返回值为实际获取的字节数
+	size_t GetBytes(char* buffer, size_t length)
+	{
+		return Serial1.readBytes(buffer, length);
+	}
 
-    //向串口发送一个字节
-    void SentByte(byte val)
-    {
+	//向串口发送一个字节
+	void SentByte(byte val)
+	{
 		delay(70);
-        Serial1.write(val);
-    }
+		Serial1.write(val);
+	}
 
-    //向串口发送数据的字符串形式
-    void Print(const char* val)
-    {
-        for (char* i = (char*)val; *i != '\0'; i++)
-        {
+	//向串口发送数据的字符串形式
+	void Print(const char* val)
+	{
+		for (char* i = (char*)val; *i != '\0'; i++)
+		{
 			delay(70);
-            Serial1.write(*i);
-        }
-    }
+			Serial1.write(*i);
+		}
+	}
 
 private:
-    uint32_t speed;
+	uint32_t speed;
 };
 
 //蓝牙串口
@@ -76,77 +76,77 @@ BlueTeeth blueTeeth = BlueTeeth(9600);
 class Motor
 {
 public:
-    //构造函数
-    Motor(pin pin_pmw, pin pin_low, pin pin_high, pin pin_speed)
-    {
-        pmw = pin_pmw;
-        high = pin_high;
-        low = pin_low;
-        speed = pin_speed;
-        motorspeed = 0;
-    }
+	//构造函数
+	Motor(pin pin_pmw, pin pin_low, pin pin_high, pin pin_speed)
+	{
+		pmw = pin_pmw;
+		high = pin_high;
+		low = pin_low;
+		speed = pin_speed;
+		motorspeed = 0;
+	}
 
-    //初始化
-    void Init()
-    {
-        pinMode(low, OUTPUT);
-        pinMode(high, OUTPUT);
+	//初始化
+	void Init()
+	{
+		pinMode(low, OUTPUT);
+		pinMode(high, OUTPUT);
 		pinMode(speed,INPUT);
-        SetSpeed(0);
-    }
+		SetSpeed(0);
+	}
 
-    //获取速度，-255~255
-    int GetSpeed()
-    {
-        return motorspeed;
-    }
+	//获取速度，-255~255
+	int GetSpeed()
+	{
+		return motorspeed;
+	}
 
-    //设置速度，-255~255
-    void SetSpeed(int speed)
-    {
-        if (speed > 0)
-        {
-            speed += 50;
-            motorspeed = (speed > 255) ? 255 : speed;
-            digitalWrite(high, HIGH);
-            digitalWrite(low, LOW);
-            analogWrite(pmw, motorspeed);
-        }
-        else if (speed<0)
-        {
-            speed -= 50;
-            motorspeed = (speed < -255) ? -255 : speed;
-            digitalWrite(low, HIGH);
-            digitalWrite(high, LOW);
-            analogWrite(pmw, -motorspeed);
-        }
-        else
-        {
-            motorspeed = 0;
-            analogWrite(pmw, motorspeed);
-        }
-    }
+	//设置速度，-255~255
+	void SetSpeed(int speed)
+	{
+		if (speed > 0)
+		{
+			speed += 50;
+			motorspeed = (speed > 255) ? 255 : speed;
+			digitalWrite(high, HIGH);
+			digitalWrite(low, LOW);
+			analogWrite(pmw, motorspeed);
+		}
+		else if (speed<0)
+		{
+			speed -= 50;
+			motorspeed = (speed < -255) ? -255 : speed;
+			digitalWrite(low, HIGH);
+			digitalWrite(high, LOW);
+			analogWrite(pmw, -motorspeed);
+		}
+		else
+		{
+			motorspeed = 0;
+			analogWrite(pmw, motorspeed);
+		}
+	}
 
-    //码盘转过相应齿数后返回
-    void WaitDistance(uint32_t times)
-    {
-        int state = digitalRead(speed);
-        int newstate;
-        int64_t i = -(int64_t)times;
-        while (i<times)
-        {
-            newstate = digitalRead(speed);
-            if (state!=newstate)
-            {
-                state = newstate;
-                i++;
-            }
-        }
-    }
+	//码盘转过相应齿数后返回
+	void WaitDistance(uint32_t times)
+	{
+		int state = digitalRead(speed);
+		int newstate;
+		int64_t i = -(int64_t)times;
+		while (i<times)
+		{
+			newstate = digitalRead(speed);
+			if (state!=newstate)
+			{
+				state = newstate;
+				i++;
+			}
+		}
+	}
 
 private:
-    pin pmw, low, high, speed;
-    int motorspeed;
+	pin pmw, low, high, speed;
+	int motorspeed;
 };
 
 //左侧电机
@@ -160,79 +160,94 @@ Motor motorR = Motor(3, A2, A3, A0);
 class LightSensor
 {
 public:
-    //构造函数
-    LightSensor()
-    {
-    }
+	//构造函数
+	LightSensor()
+	{
+	}
 
-    //析构函数
-    ~LightSensor()
-    {
-        Wire.beginTransmission(i2cadd);
-        Wire.write(codePowerDown);
-        Wire.endTransmission();
-    }
+	//析构函数
+	~LightSensor()
+	{
+		Wire.beginTransmission(i2cadd);
+		Wire.write(codePowerDown);
+		Wire.endTransmission();
+	}
 
-    //初始化
-    void Init()
-    {
-        Wire.begin();
-        Wire.beginTransmission(i2cadd);
-        Wire.write(codePowerOn);
-        Wire.endTransmission();
-        SetDirection(0);
-    }
+	//初始化
+	void Init()
+	{
+		Wire.begin();
+		Wire.beginTransmission(i2cadd);
+		Wire.write(codePowerOn);
+		Wire.endTransmission();
+		SetDirection(0);
+	}
 
-    //获取光强，4 lux 分辨率，24 ms 响应时间
-    uint16_t GetLuxL()
-    {
-        uint16_t temp = 0;
-        Wire.beginTransmission(i2cadd);
-        Wire.write(codeLResolution);
-        Wire.endTransmission();
-        delay(24);
-        Wire.requestFrom(i2cadd, 2);
-        Wire.readBytes((char*)&temp, 2);
-        return temp;
-    }
+	//获取光强，4 lux 分辨率，24 ms 响应时间
+	uint16_t GetLuxL()
+	{
+		uint16_t temp = 0;
+		Wire.beginTransmission(i2cadd);
+		Wire.write(codeLResolution);
+		Wire.endTransmission();
+		delay(24);
+		Wire.requestFrom(i2cadd, 2);
+		Wire.readBytes((char*)&temp, 2);
+		return temp;
+	}
 
-    //获取光强，1 lux 分辨率，180 ms 响应时间
-    uint16_t GetLuxH()
-    {
-        uint16_t temp = 0;
-        Wire.beginTransmission(i2cadd);
-        Wire.write(codeHResolution);
-        Wire.endTransmission();
-        delay(180);
-        Wire.requestFrom(i2cadd, 2);
-        Wire.readBytes((char*)&temp, 2);
-        return temp;
-    }
+	//获取光强，1 lux 分辨率，180 ms 响应时间
+	uint16_t GetLuxH()
+	{
+		uint16_t temp = 0;
+		Wire.beginTransmission(i2cadd);
+		Wire.write(codeHResolution);
+		Wire.endTransmission();
+		delay(180);
+		Wire.requestFrom(i2cadd, 2);
+		Wire.readBytes((char*)&temp, 2);
+		return temp;
+	}
 
-    //设置舵机方向，-128~127
-    void SetDirection(int8_t val)
-    {
-        direction = val;
-        analogWrite(pinDirection, val + 128);
-    }
+	//在只是用舵机的情况下，找到最大光强，并返回相应光强
+	uint16_t FindBright()
+	{
+		int16_t i = 0, j = 0;
+		uint16_t maxLux = 0;
+		for (i = -12; i <= 12; i++)
+		{
+			lightSensor.SetDirection(i * 10);
+			delay(100);
+			j = lightSensor.GetLuxL();
+			if (j > maxLux) maxLux = j;
+		};
+		return maxLux;
+	};
 
-    //获取舵机方向，-128~127
-    int8_t GetDirection()
-    {
-        return direction;
-    }
+	//设置舵机方向，-128~127
+	void SetDirection(int8_t val)
+	{
+		direction = val;
+		analogWrite(pinDirection, val + 128);
+	}
+
+	//获取舵机方向，-128~127
+	int8_t GetDirection()
+	{
+		return direction;
+	}
 
 private:
-    const int i2cadd = 0x23;
-    enum optionCode
-    {
-        codePowerDown = 0x00,
-        codePowerOn = 0x01,
-        codeHResolution = 0x10,
-        codeLResolution = 0x13
-    };
-    const pin pinDirection = 6;
-    int8_t direction;
+	const int i2cadd = 0x23;
+	enum optionCode
+	{
+		codePowerDown = 0x00,
+		codePowerOn = 0x01,
+		codeHResolution = 0x10,
+		codeLResolution = 0x13
+	};
+	const pin pinDirection = 6;
+	int8_t direction;
 };
 
 //环境光传感器
@@ -242,33 +257,33 @@ LightSensor lightSensor = LightSensor();
 class DistanceSensor
 {
 public:
-    //构造函数
-    DistanceSensor(pin pin_trig, pin pin_echo)
-    {
-        trig = pin_trig;
-        echo = pin_echo;
-    }
+	//构造函数
+	DistanceSensor(pin pin_trig, pin pin_echo)
+	{
+		trig = pin_trig;
+		echo = pin_echo;
+	}
 
-    //初始化
-    void Init()
-    {
-        pinMode(trig, OUTPUT);
-        pinMode(echo, INPUT);
-    }
+	//初始化
+	void Init()
+	{
+		pinMode(trig, OUTPUT);
+		pinMode(echo, INPUT);
+	}
 
-    //测试距离，单位为 um
-    unsigned long GetDistance()
-    {
-        digitalWrite(trig, LOW);
-        delayMicroseconds(2);
-        digitalWrite(trig, HIGH);
-        delayMicroseconds(20);
-        digitalWrite(trig, LOW);
-        return pulseIn(echo, HIGH) * 170;
-    }
+	//测试距离，单位为 um
+	unsigned long GetDistance()
+	{
+		digitalWrite(trig, LOW);
+		delayMicroseconds(2);
+		digitalWrite(trig, HIGH);
+		delayMicroseconds(20);
+		digitalWrite(trig, LOW);
+		return pulseIn(echo, HIGH) * 170;
+	}
 
 private:
-    pin trig, echo;
+	pin trig, echo;
 };
 
 //前方距离传感器
@@ -290,265 +305,280 @@ byte Mode = 0;
 //初始化函数
 void Init()
 {
-    blueTeeth.Init();
-    motorL.Init();
-    motorR.Init();
-    lightSensor.Init();
-    distanceF.Init();
-    distanceL.Init();
-    distanceR.Init();
+	blueTeeth.Init();
+	motorL.Init();
+	motorR.Init();
+	lightSensor.Init();
+	distanceF.Init();
+	distanceL.Init();
+	distanceR.Init();
 }
 
 //测试蓝牙链接
 void Test(byte message)
 {
-    char out[20] = {0};
-    sprintf(out, "OK\n%#X\n", message);
-    blueTeeth.Print(out);
+	char out[20] = {0};
+	sprintf(out, "OK\n%#X\n", message);
+	blueTeeth.Print(out);
 }
 
 //蓝牙遥控
 void ModeRemoteCtrl(byte message)
 {
-    int8_t _speed = message << 4;
-    int16_t speed = 2 * _speed;
-    if (bitRead(message, 4))
-    {
-        //右轮
-        motorR.SetSpeed(speed);
-    }
-    else
-    {
-        //左轮
-        motorL.SetSpeed(speed);
-    }
+	int8_t _speed = message << 4;
+	int16_t speed = 2 * _speed;
+	if (bitRead(message, 4))
+	{
+		//右轮
+		motorR.SetSpeed(speed);
+	}
+	else
+	{
+		//左轮
+		motorL.SetSpeed(speed);
+	}
 }
 
 //直线前进 AI
 void ModeStraight(byte message)
 {
-    if (bitRead(message, 0))
-    {
-        //开始执行
-    }
+	if (bitRead(message, 0))
+	{
+		//开始执行
+	}
 }
 
-void seek_bright(){};
-void seek_void(){};
+#define threshold_dist 100
+
+//面朝最大光强方向
+void seek_bright()
+{
+	//360度寻找最大光强
+	int box = 0, maxLux = 0;
+	maxLux = lightSensor.FindBright();
+	//turn
+	motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
+	box = lightSensor.FindBright();
+	if (box>maxLux) maxLux = box;
+	//turn again
+	motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
+	box = lightSensor.FindBright();
+	if (box>maxLux) maxLux = box;
+
+	//小车面向最大光强处
+	motorL.SetSpeed(-150); motorR.SetSpeed(150);
+	while (lightSensor.GetLuxL() < maxLux - 5) {};
+	motorL.SetSpeed(0); motorR.SetSpeed(0);
+};
+
+//面朝最近的无障碍方向
+void seek_void()
+{
+	motorL.SetSpeed(-150); motorR.SetSpeed(150);
+	while (!front_ok()) {};
+	motorL.SetSpeed(0); motorR.SetSpeed(0);
+}
+
+//前方是否有障碍
+bool front_ok()
+{
+	return distanceF.GetDistance() > threshold_dist;
+}
+
+//左右是否
 bool side_ok(){};
-bool front_ok(){};
+
 void go(){};
 void stop(){};
-void left(){};
-void right(){};
 
 //寻光 AI
 void ModeFindLight(byte message)
 {
-	//int i, j, k, maxLux = 0;
- //   for (i = -12; i <= 12; i++)
- //   {
-	//	lightSensor.SetDirection(i * 10);
- //       delay(100);
- //       j = lightSensor.GetLuxL();
- //      if (j > maxLux)
- //           {
- //               maxLux = j;
- //               k = i;
- //           };
- //   };
-
- //       lightSensor.SetDirection(0);
- //       if (k < 0)
- //       {
- //           motorL.SetSpeed(-100);
- //           motorR.SetSpeed(100);
- //       };
- //       if (k > 0)
- //       {
- //           motorL.SetSpeed(100);
- //           motorR.SetSpeed(-100);
- //       };
- //       while (lightSensor.GetLuxL() < maxLux - 5);
- //       motorL.SetSpeed(200);
- //       motorR.SetSpeed(200);
 	int nb = 0;
-	bool box,re;
+	bool box,re,void_l,void_r,void_f;
 	while(1)
 	{
+		//追光模式
 		seek_bright();
 		go();
-		while (front_ok) {}; stop();
-		seek_void();
-		go();
+		while (front_ok()) { delay(10); }; stop();
+		//遇到障碍,进入避障模式
 		while (1)
 		{
-			while((!side_ok())||front_ok()) {}; stop();
-			if (!front_ok()) 
+			seek_void(); go();
+			void_l = false; void_r = true; void_f = true;
+			while((!void_l) && (!void_r) && void_f)
 			{
+				void_l = side_ok(/*left*/);
+				void_r = side_ok(/*right*/);
+				void_f = front_ok();
+			};
+			stop();
+			//避障失败,重启避障模式
+			if (!void_f) 
+			{
+				//防止进入避障死循环,强制重新进入追光模式
 				if (nb>2) 
 				{
 					nb = 0;
-					re = true;
 					break;
 				};
 				nb++; 
-				seek_void();
-			};
-			if (re) { re = false; break;};
-			go();
+			}
+			//避障成功,重新进入追光模式
+			if (void_l||void_r) break;
 		};
 	};
 
 
 	//}
- //   
+	//   
 }
 
 //发送状态至蓝牙
 void SendState(byte message)
 {
-    if (bitRead(message, 5))
-    {
-        //lightSensor
-        char out5[50] = {0};
-        sprintf(out5, "L:\n\td: %d\n\tl: %d\n\n", lightSensor.GetDirection(), lightSensor.GetLuxL());
-        blueTeeth.Print(out5);
-    }
-    if (bitRead(message, 4))
-    {
-        //motorL
-        char out4[15] = {0};
-        sprintf(out4, "LM: %d\n\n", motorL.GetSpeed());
-        blueTeeth.Print(out4);
-    }
-    if (bitRead(message, 3))
-    {
-        //motolR
-        char out3[15] = {0};
-        sprintf(out3, "RM: %d\n\n", motorR.GetSpeed());
-        blueTeeth.Print(out3);
-    }
-    if (bitRead(message, 2))
-    {
-        //distanceF
-        char out2[25] = {0};
-        sprintf(out2, "FD: %lu\n\n", distanceF.GetDistance());
-        blueTeeth.Print(out2);
-    }
-    if (bitRead(message, 1))
-    {
-        //distanceL
-        char out1[25] = {0};
-        sprintf(out1, "LD: %lu\n\n", distanceL.GetDistance());
-        blueTeeth.Print(out1);
-    }
-    if (bitRead(message, 0))
-    {
-        //distanceR
-        char out0[25] = {0};
-        sprintf(out0, "RD: %lu\n\n", distanceR.GetDistance());
-        blueTeeth.Print(out0);
-    }
+	if (bitRead(message, 5))
+	{
+		//lightSensor
+		char out5[50] = {0};
+		sprintf(out5, "L:\n\td: %d\n\tl: %d\n\n", lightSensor.GetDirection(), lightSensor.GetLuxL());
+		blueTeeth.Print(out5);
+	}
+	if (bitRead(message, 4))
+	{
+		//motorL
+		char out4[15] = {0};
+		sprintf(out4, "LM: %d\n\n", motorL.GetSpeed());
+		blueTeeth.Print(out4);
+	}
+	if (bitRead(message, 3))
+	{
+		//motolR
+		char out3[15] = {0};
+		sprintf(out3, "RM: %d\n\n", motorR.GetSpeed());
+		blueTeeth.Print(out3);
+	}
+	if (bitRead(message, 2))
+	{
+		//distanceF
+		char out2[25] = {0};
+		sprintf(out2, "FD: %lu\n\n", distanceF.GetDistance());
+		blueTeeth.Print(out2);
+	}
+	if (bitRead(message, 1))
+	{
+		//distanceL
+		char out1[25] = {0};
+		sprintf(out1, "LD: %lu\n\n", distanceL.GetDistance());
+		blueTeeth.Print(out1);
+	}
+	if (bitRead(message, 0))
+	{
+		//distanceR
+		char out0[25] = {0};
+		sprintf(out0, "RD: %lu\n\n", distanceR.GetDistance());
+		blueTeeth.Print(out0);
+	}
 }
 
-#define DEBUG
+//#define DEBUG
 #ifndef DEBUG
 
 void setup()
 {
-    Init();
+	Init();
 }
 
 void loop()
 {
-    if (blueTeeth.GetAvailable())
-    {
-        //蓝牙指令
-        byte message = blueTeeth.GetByte();
-        if (bitRead(message, 7))
-        {
-            //1xxxxxxx
-            if (bitRead(message, 6))
-            {
-                //11xxxxxx
-                SendState(message);
-            }
-            else
-            {
-                //10xxxxxx
-                if (bitRead(message, 5))
-                {
-                    //101xxxxx
-                    switch (Mode)
-                    {
-                    case 0x01:
-                        ModeRemoteCtrl(message);
-                        break;
-                    case 0x02:
-                        ModeStraight(message);
-                        break;
-                    case 0x03:
-                        ModeFindLight(message);
-                        break;
-                    default:
-                        break;
-                    }
-                }
-                else
-                {
-                    //100xxxxx
-                    switch (message)
-                    {
-                    case 0x80:
-                        Mode = 0x00;
-                        break;
-                    case 0x81:
-                        Mode = 0x01;
-                        break;
-                    case 0x82:
-                        Mode = 0x02;
-                        break;
-                    case 0x83:
-                        Mode = 0x03;
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            //0xxxxxxx
-            if (bitRead(message, 6))
-            {
-                //01xxxxxx
-            }
-            else
-            {
-                //00xxxxxx
-                Test(message);
-            }
-        }
-    }
+	if (blueTeeth.GetAvailable())
+	{
+		//蓝牙指令
+		byte message = blueTeeth.GetByte();
+		if (bitRead(message, 7))
+		{
+			//1xxxxxxx
+			if (bitRead(message, 6))
+			{
+				//11xxxxxx
+				SendState(message);
+			}
+			else
+			{
+				//10xxxxxx
+				if (bitRead(message, 5))
+				{
+					//101xxxxx
+					switch (Mode)
+					{
+					case 0x01:
+						ModeRemoteCtrl(message);
+						break;
+					case 0x02:
+						ModeStraight(message);
+						break;
+					case 0x03:
+						ModeFindLight(message);
+						break;
+					default:
+						break;
+					}
+				}
+				else
+				{
+					//100xxxxx
+					switch (message)
+					{
+					case 0x80:
+						Mode = 0x00;
+						break;
+					case 0x81:
+						Mode = 0x01;
+						break;
+					case 0x82:
+						Mode = 0x02;
+						break;
+					case 0x83:
+						Mode = 0x03;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			//0xxxxxxx
+			if (bitRead(message, 6))
+			{
+				//01xxxxxx
+			}
+			else
+			{
+				//00xxxxxx
+				Test(message);
+			}
+		}
+	}
 }
 
 #else
 
 void setup()
 {
-    Init();
+	Init();
 }
 
 void loop()
 {
-	 //motorL.SetSpeed(200);
-	 //motorR.SetSpeed(200);
-	 //delay(1000);
-	 //motorL.SetSpeed(-200);
-	 //motorR.SetSpeed(-200);
-	 //delay(1000);
+	//motorL.SetSpeed(200);
+	//motorR.SetSpeed(200);
+	//delay(1000);
+	//motorL.SetSpeed(-200);
+	//motorR.SetSpeed(-200);
+	//delay(1000);
 }
 
 #endif
