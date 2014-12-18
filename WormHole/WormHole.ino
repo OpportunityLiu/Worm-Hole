@@ -274,12 +274,7 @@ public:
 	//≤‚ ‘æ‡¿Î£¨µ•ŒªŒ™ um
 	unsigned long GetDistance()
 	{
-		int r;
-		digitalWrite(trig, LOW);
-		digitalWrite(trig, HIGH);
-		r= pulseIn(echo, HIGH) ;
-		digitalWrite(trig, LOW);
-		return r* 170;
+		return pulseIn(echo, HIGH)* 170;
 	}
 
 private:
