@@ -216,9 +216,9 @@ public:
 		uint16_t maxLux = 0;
 		for (i = -12; i <= 12; i++)
 		{
-			lightSensor.SetDirection(i * 10);
+			SetDirection(i * 10);
 			delay(100);
-			j = lightSensor.GetLuxL();
+			j = GetLuxL();
 			if (j > maxLux) maxLux = j;
 		};
 		return maxLux;
@@ -267,19 +267,19 @@ public:
 	//初始化
 	void Init()
 	{
-		pinMode(trig, OUTPUT);
 		pinMode(echo, INPUT);
+		analogWrite(trig,128);
 	}
 
 	//测试距离，单位为 um
 	unsigned long GetDistance()
 	{
+		int r;
 		digitalWrite(trig, LOW);
-		delayMicroseconds(2);
 		digitalWrite(trig, HIGH);
-		delayMicroseconds(20);
+		r= pulseIn(echo, HIGH) ;
 		digitalWrite(trig, LOW);
-		return pulseIn(echo, HIGH) * 170;
+		return r* 170;
 	}
 
 private:
@@ -287,7 +287,7 @@ private:
 };
 
 //前方距离传感器
-DistanceSensor distanceF = DistanceSensor(8, 9);
+DistanceSensor distanceF = DistanceSensor(9, 8);
 
 //左侧距离传感器
 DistanceSensor distanceL = DistanceSensor(10, 11);
@@ -482,7 +482,7 @@ void SendState(byte message)
 	}
 }
 
-//#define DEBUG
+#define DEBUG
 #ifndef DEBUG
 
 void setup()
@@ -569,16 +569,12 @@ void loop()
 void setup()
 {
 	Init();
+	Serial.begin(9600);
 }
 
 void loop()
 {
-	//motorL.SetSpeed(200);
-	//motorR.SetSpeed(200);
-	//delay(1000);
-	//motorL.SetSpeed(-200);
-	//motorR.SetSpeed(-200);
-	//delay(1000);
+	Serial.println(distanceF.GetDistance());
 }
 
 #endif
