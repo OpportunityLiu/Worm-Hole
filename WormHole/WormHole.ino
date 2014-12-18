@@ -318,117 +318,151 @@ void Test(byte message)
 }
 
 //蓝牙遥控
-void ModeRemoteCtrl(byte message)
+class ModeRemoteCtrl
 {
-	int8_t _speed = message << 4;
-	int16_t speed = 2 * _speed;
-	if (bitRead(message, 4))
-	{
-		//右轮
-		motorR.SetSpeed(speed);
-	}
-	else
-	{
-		//左轮
-		motorL.SetSpeed(speed);
-	}
-}
+public:
+    void begin(byte message)
+    {
+        _speed = message << 4;
+        speed = 2 * _speed;
+        if (bitRead(message, 4))
+        {
+            //右轮
+            motorR.SetSpeed(speed);
+        }
+        else
+        {
+            //左轮
+            motorL.SetSpeed(speed);
+        }
+    }
 
-//直线前进 AI
-void ModeStraight(byte message)
+private:
+    int8_t _speed;
+    int16_t speed;
+};
+
+ModeRemoteCtrl modeRemoteCtrl();
+
+
+class ModeStraight
 {
-	if (bitRead(message, 0))
-	{
-		//开始执行
-	}
-}
+public:
+    void begin()
+    {
+        motorL.SetSpeed(100); motorR.SetSpeed(100);
+        motorL.WaitDistance(100);
+        motorL.SetSpeed(0); motorR.SetSpeed(0);
+    }
+};
+
+ModeStraight modeStraight();
 
 #define threshold_dist 100
 
-//面朝最大光强方向
-void seek_bright()
+class ModeLight
 {
-	//360度寻找最大光强
-	int box = 0, maxLux = 0;
-	maxLux = lightSensor.FindBright();
-	//turn
-	motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
-	box = lightSensor.FindBright();
-	if (box>maxLux) maxLux = box;
-	//turn again
-	motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
-	box = lightSensor.FindBright();
-	if (box>maxLux) maxLux = box;
+public:
+    void begin()
+    {
+        while (1)
+        {
+            //追光模式
+            seek_bright();
+            go();
+            while (if_void(distanceF))
+            {
+                delay(10);
+            }; delay(100); stop();
+            //遇到障碍,进入避障模式
+            while (nb <= 2/*防止进入避障死循环,强制重新进入追光模式*/)
+            {
+                seek_void(); go();
+                changed_l = false; changed_r = false; void_f = true;
+                start_l = if_void(distanceL); start_r = if_void(distanceR);
+                // go till arriving a new key position
+                while ((!changed_l) && (!changed_r) && void_f)
+                {
+                    changed_l = if_changed(distanceL, start_l);
+                    changed_r = if_changed(distanceR, start_r);
+                    void_f = if_void(distanceF);
+                };
+                stop();
+                //避障失败,重启避障模式
+                if (!void_f) nb++;
+                //避障成功,重新进入追光模式
+                if (changed_l || changed_r) break;
+            };
+        };
+    }
 
-	//小车面向最大光强处
-	motorL.SetSpeed(-150); motorR.SetSpeed(150);
-	while (lightSensor.GetLuxL() < maxLux - 5) {};
-	motorL.SetSpeed(0); motorR.SetSpeed(0);
+private:
+    //面朝最大光强方向
+    void seek_bright()
+    {
+        //
+        motorL.SetSpeed(-150); motorR.SetSpeed(-150); delay(100); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        //360度寻找最大光强
+        int box = 0, maxLux = 0;
+        maxLux = lightSensor.FindBright();
+        //turn  120deg
+        motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        box = lightSensor.FindBright();
+        if (box>maxLux) maxLux = box;
+        //turn again 120deg
+        motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        box = lightSensor.FindBright();
+        if (box>maxLux) maxLux = box;
+
+        //小车面向最大光强处
+        motorL.SetSpeed(-150); motorR.SetSpeed(150);
+        while (lightSensor.GetLuxL() < maxLux - 5)
+        {
+        };
+        motorL.SetSpeed(0); motorR.SetSpeed(0);
+    };
+
+    //是否有障碍
+    bool if_void(DistanceSensor distance)
+    {
+        return distance.GetDistance() > threshold_dist;
+    }
+
+    bool if_changed(DistanceSensor distance, bool start)
+    {
+        if (start) return false;
+        return if_void(distance);
+    }
+
+    //面朝最近的无障碍方向
+    void seek_void()
+    {
+        //
+        motorL.SetSpeed(-150); motorR.SetSpeed(-150); delay(100); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        //
+        motorL.SetSpeed(-150); motorR.SetSpeed(150);
+        while (!if_void(distanceF))
+        {
+            delay(10);
+        };
+        delay(100);	motorL.SetSpeed(0); motorR.SetSpeed(0);
+    }
+
+    void go()
+    {
+        motorL.SetSpeed(150); motorR.SetSpeed(150);
+    };
+
+    void stop()
+    {
+        motorL.SetSpeed(0); motorR.SetSpeed(0);
+    };
+
+    int nb = 0;
+    bool box, re, changed_l, changed_r, void_f, start_l, start_r;
 };
 
-//面朝最近的无障碍方向
-void seek_void()
-{
-	motorL.SetSpeed(-150); motorR.SetSpeed(150);
-	while (!front_ok()) {};
-	motorL.SetSpeed(0); motorR.SetSpeed(0);
-}
-
-//前方是否有障碍
-bool front_ok()
-{
-	return distanceF.GetDistance() > threshold_dist;
-}
-
-//左右是否
-bool side_ok(){};
-
-void go(){};
-void stop(){};
-
-//寻光 AI
-void ModeFindLight(byte message)
-{
-	int nb = 0;
-	bool box,re,void_l,void_r,void_f;
-	while(1)
-	{
-		//追光模式
-		seek_bright();
-		go();
-		while (front_ok()) { delay(10); }; stop();
-		//遇到障碍,进入避障模式
-		while (1)
-		{
-			seek_void(); go();
-			void_l = false; void_r = true; void_f = true;
-			while((!void_l) && (!void_r) && void_f)
-			{
-				void_l = side_ok(/*left*/);
-				void_r = side_ok(/*right*/);
-				void_f = front_ok();
-			};
-			stop();
-			//避障失败,重启避障模式
-			if (!void_f) 
-			{
-				//防止进入避障死循环,强制重新进入追光模式
-				if (nb>2) 
-				{
-					nb = 0;
-					break;
-				};
-				nb++; 
-			}
-			//避障成功,重新进入追光模式
-			if (void_l||void_r) break;
-		};
-	};
-
-
-	//}
-	//   
-}
+ModeLight modeLight();
 
 //发送状态至蓝牙
 void SendState(byte message)
