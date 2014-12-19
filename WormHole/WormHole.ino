@@ -311,9 +311,7 @@ void Test(byte message)
 class ModeRemoteCtrl
 {
 public:
-    ModeRemoteCtrl()
-    {
-    }
+	ModeRemoteCtrl(){};
     void begin(byte message)
     {
         _speed = message << 4;
@@ -341,7 +339,7 @@ ModeRemoteCtrl modeRemoteCtrl = ModeRemoteCtrl();
 class ModeStraight
 {
 public:
-    void begin(byte message)
+    void begin()
     {
         motorL.SetSpeed(100); motorR.SetSpeed(100);
         motorL.WaitDistance(100);
@@ -351,16 +349,15 @@ public:
 
 ModeStraight modeStraight = ModeStraight();
 
-#define threshold_dist 100
-
 //寻光模式
 class ModeLight
 {
 public:
-    void begin(byte message)
+    void begin()
     {
         while (1)
         {
+			nb = 0;
             //追光模式
             seek_bright();
             go();
@@ -369,7 +366,7 @@ public:
                 delay(10);
             }; delay(100); stop();
             //遇到障碍,进入避障模式
-            while (nb <= 2/*防止进入避障死循环,强制重新进入追光模式*/)
+            while (nb <= 2)	//防止进入避障死循环,强制重新进入追光模式
             {
                 seek_void(); go();
                 changed_l = false; changed_r = false; void_f = true;
@@ -422,6 +419,7 @@ private:
         return distance.GetDistance() > threshold_dist;
     }
 
+	//是否到达关键点
     bool if_changed(DistanceSensor distance, bool start)
     {
         if (start) return false;
@@ -452,8 +450,9 @@ private:
         motorL.SetSpeed(0); motorR.SetSpeed(0);
     };
 
-    int nb = 0;
+    int nb;
     bool box, re, changed_l, changed_r, void_f, start_l, start_r;
+	const int threshold_dist = 100;
 };
 
 ModeLight modeLight = ModeLight();
@@ -517,27 +516,8 @@ void SendState(byte message)
 //  3 寻光
 byte Mode = 0;
 
-//初始化函数
-void Init()
-{
-    blueTeeth.Init();
-    motorL.Init();
-    motorR.Init();
-    lightSensor.Init();
-    distanceF.Init();
-    distanceL.Init();
-    distanceR.Init();
-}
-
-//#define DEBUG
-#ifndef DEBUG
-
-void setup()
-{
-	Init();
-}
-
-void loop()
+//蓝牙命令处理者
+void BlueBridge()
 {
 	if (blueTeeth.GetAvailable())
 	{
@@ -563,10 +543,10 @@ void loop()
 						modeRemoteCtrl.begin(message);
 						break;
 					case 0x02:
-						modeStraight.begin(message);
+						modeStraight.begin();
 						break;
 					case 0x03:
-						modeLight.begin(message);
+						modeLight.begin();
 						break;
 					default:
 						break;
@@ -609,6 +589,31 @@ void loop()
 			}
 		}
 	}
+}
+
+//初始化函数
+void Init()
+{
+    blueTeeth.Init();
+    motorL.Init();
+    motorR.Init();
+    lightSensor.Init();
+    distanceF.Init();
+    distanceL.Init();
+    distanceR.Init();
+}
+
+//#define DEBUG
+#ifndef DEBUG
+
+void setup()
+{
+	Init();
+}
+
+void loop()
+{
+	BlueBridge();
 }
 
 #else
