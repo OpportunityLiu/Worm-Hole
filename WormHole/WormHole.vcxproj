@@ -86,7 +86,7 @@
       <ForcedIncludeFiles>C:\Users\LionHere\Documents\Arduino\Worm Hole\WormHole\Visual Micro\.WormHole.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>__BIN_I586__;ARDUINO=153;ARDUINO_MAIN;printf=iprintf;__X86__;__x86__;F_CPU=-m32;__cplusplus;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__BIN_I586__;ARDUINO=150;ARDUINO_MAIN;printf=iprintf;__X86__;__x86__;F_CPU=-m32;__cplusplus;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

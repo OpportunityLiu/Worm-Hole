@@ -4,6 +4,9 @@
 //针脚定义
 typedef uint8_t pin;
 
+#ifndef _WH_HARDWARE_
+#define _WH_HARDWARE_
+
 //蓝牙串口
 class BlueTeeth
 {
@@ -151,18 +154,18 @@ private:
 
 //左侧电机
 Motor motorL = Motor(5, 4, 2, A1);
-//Motor motorL = Motor(6, A4, A5, A1);
 
 //右侧电机
-//Motor motorR = Motor(3, 2, 4, A0);
 Motor motorR = Motor(3, A2, A3, A0);
+
 //环境光传感器
 class LightSensor
 {
 public:
 	//构造函数
-	LightSensor()
+	LightSensor(pin pin_direction)
 	{
+        pinDirection = pin_direction;
 	}
 
 	//析构函数
@@ -246,12 +249,12 @@ private:
 		codeHResolution = 0x10,
 		codeLResolution = 0x13
 	};
-	const pin pinDirection = 6;
+    pin pinDirection;
 	int8_t direction;
 };
 
 //环境光传感器
-LightSensor lightSensor = LightSensor();
+LightSensor lightSensor = LightSensor(6);
 
 //距离传感器
 class DistanceSensor
@@ -274,6 +277,7 @@ public:
 	//测试距离，单位为 um
 	unsigned long GetDistance()
 	{
+        pulseIn(echo, HIGH);
 		return pulseIn(echo, HIGH)* 170;
 	}
 
@@ -290,24 +294,10 @@ DistanceSensor distanceL = DistanceSensor(10, 11);
 //右侧距离传感器
 DistanceSensor distanceR = DistanceSensor(12, 13);
 
-//当前模式
-//  0 停止
-//  1 遥控
-//  2 直线
-//  3 寻光
-byte Mode = 0;
+#endif
 
-//初始化函数
-void Init()
-{
-	blueTeeth.Init();
-	motorL.Init();
-	motorR.Init();
-	lightSensor.Init();
-	distanceF.Init();
-	distanceL.Init();
-	distanceR.Init();
-}
+#ifndef _WH_SUBMODULES_
+#define _WH_SUBMODULES_
 
 //测试蓝牙链接
 void Test(byte message)
@@ -321,6 +311,9 @@ void Test(byte message)
 class ModeRemoteCtrl
 {
 public:
+    ModeRemoteCtrl()
+    {
+    }
     void begin(byte message)
     {
         _speed = message << 4;
@@ -342,13 +335,13 @@ private:
     int16_t speed;
 };
 
-ModeRemoteCtrl modeRemoteCtrl();
+ModeRemoteCtrl modeRemoteCtrl = ModeRemoteCtrl();
 
-
+//直线前进
 class ModeStraight
 {
 public:
-    void begin()
+    void begin(byte message)
     {
         motorL.SetSpeed(100); motorR.SetSpeed(100);
         motorL.WaitDistance(100);
@@ -356,14 +349,15 @@ public:
     }
 };
 
-ModeStraight modeStraight();
+ModeStraight modeStraight = ModeStraight();
 
 #define threshold_dist 100
 
+//寻光模式
 class ModeLight
 {
 public:
-    void begin()
+    void begin(byte message)
     {
         while (1)
         {
@@ -462,7 +456,7 @@ private:
     bool box, re, changed_l, changed_r, void_f, start_l, start_r;
 };
 
-ModeLight modeLight();
+ModeLight modeLight = ModeLight();
 
 //发送状态至蓝牙
 void SendState(byte message)
@@ -511,7 +505,31 @@ void SendState(byte message)
 	}
 }
 
-#define DEBUG
+#endif
+
+#ifndef _WH_MAINMODULE
+#define _WH_MAINMODULE
+
+//当前模式
+//  0 停止
+//  1 遥控
+//  2 直线
+//  3 寻光
+byte Mode = 0;
+
+//初始化函数
+void Init()
+{
+    blueTeeth.Init();
+    motorL.Init();
+    motorR.Init();
+    lightSensor.Init();
+    distanceF.Init();
+    distanceL.Init();
+    distanceR.Init();
+}
+
+//#define DEBUG
 #ifndef DEBUG
 
 void setup()
@@ -542,13 +560,13 @@ void loop()
 					switch (Mode)
 					{
 					case 0x01:
-						ModeRemoteCtrl(message);
+						modeRemoteCtrl.begin(message);
 						break;
 					case 0x02:
-						ModeStraight(message);
+						modeStraight.begin(message);
 						break;
 					case 0x03:
-						ModeFindLight(message);
+						modeLight.begin(message);
 						break;
 					default:
 						break;
@@ -605,5 +623,7 @@ void loop()
 {
 	Serial.println(distanceF.GetDistance());
 }
+
+#endif
 
 #endif
