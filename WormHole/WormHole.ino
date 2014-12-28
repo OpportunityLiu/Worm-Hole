@@ -94,7 +94,7 @@ public:
 	{
 		pinMode(low, OUTPUT);
 		pinMode(high, OUTPUT);
-		pinMode(speed,INPUT);
+        pinMode(speed, INPUT);
 		SetSpeed(0);
 	}
 
@@ -115,7 +115,7 @@ public:
 			digitalWrite(low, LOW);
 			analogWrite(pmw, motorspeed);
 		}
-		else if (speed<0)
+        else if (speed < 0)
 		{
 			speed -= 50;
 			motorspeed = (speed < -255) ? -255 : speed;
@@ -136,10 +136,10 @@ public:
 		int state = digitalRead(speed);
 		int newstate;
 		int64_t i = -(int64_t)times;
-		while (i<times)
+        while (i < times)
 		{
 			newstate = digitalRead(speed);
-			if (state!=newstate)
+            if (state != newstate)
 			{
 				state = newstate;
 				i++;
@@ -222,8 +222,9 @@ public:
 			SetDirection(i * 10);
 			delay(100);
 			j = GetLuxL();
-			if (j > maxLux) maxLux = j;
-		};
+            if (j > maxLux)
+                maxLux = j;
+        }
 		return maxLux;
 	};
 
@@ -249,6 +250,7 @@ private:
 		codeHResolution = 0x10,
 		codeLResolution = 0x13
 	};
+    //舵机控制
     pin pinDirection;
 	int8_t direction;
 };
@@ -271,14 +273,14 @@ public:
 	void Init()
 	{
 		pinMode(echo, INPUT);
-		analogWrite(trig,128);
+        analogWrite(trig, 128);
 	}
 
 	//测试距离，单位为 um
 	unsigned long GetDistance()
 	{
         pulseIn(echo, HIGH);
-		return pulseIn(echo, HIGH)* 170;
+        return pulseIn(echo, HIGH) * 170;
 	}
 
 private:
@@ -364,7 +366,9 @@ public:
             while (if_void(distanceF))
             {
                 delay(10);
-            }; delay(100); stop();
+            }
+            delay(100); 
+            stop();
             //遇到障碍,进入避障模式
             while (nb <= 2)	//防止进入避障死循环,强制重新进入追光模式
             {
@@ -377,14 +381,16 @@ public:
                     changed_l = if_changed(distanceL, start_l);
                     changed_r = if_changed(distanceR, start_r);
                     void_f = if_void(distanceF);
-                };
+                }
                 stop();
                 //避障失败,重启避障模式
-                if (!void_f) nb++;
+                if (!void_f)
+                    nb++;
                 //避障成功,重新进入追光模式
-                if (changed_l || changed_r) break;
-            };
-        };
+                if (changed_l || changed_r)
+                    break;
+    }
+        }
     }
 
 private:
@@ -392,25 +398,41 @@ private:
     void seek_bright()
     {
         //
-        motorL.SetSpeed(-150); motorR.SetSpeed(-150); delay(100); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        motorL.SetSpeed(-150); 
+        motorR.SetSpeed(-150); 
+        delay(100); 
+        motorL.SetSpeed(0); 
+        motorR.SetSpeed(0);
         //360度寻找最大光强
         int box = 0, maxLux = 0;
         maxLux = lightSensor.FindBright();
         //turn  120deg
-        motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        motorL.SetSpeed(-150); 
+        motorR.SetSpeed(150); 
+        delay(3000); 
+        motorL.SetSpeed(0); 
+        motorR.SetSpeed(0);
         box = lightSensor.FindBright();
-        if (box>maxLux) maxLux = box;
+        if (box > maxLux) 
+            maxLux = box;
         //turn again 120deg
-        motorL.SetSpeed(-150); motorR.SetSpeed(150); delay(3000); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        motorL.SetSpeed(-150); 
+        motorR.SetSpeed(150); 
+        delay(3000); 
+        motorL.SetSpeed(0); 
+        motorR.SetSpeed(0);
         box = lightSensor.FindBright();
-        if (box>maxLux) maxLux = box;
+        if (box > maxLux) 
+            maxLux = box;
 
         //小车面向最大光强处
-        motorL.SetSpeed(-150); motorR.SetSpeed(150);
+        motorL.SetSpeed(-150); 
+        motorR.SetSpeed(150);
         while (lightSensor.GetLuxL() < maxLux - 5)
         {
-        };
-        motorL.SetSpeed(0); motorR.SetSpeed(0);
+        }
+        motorL.SetSpeed(0); 
+        motorR.SetSpeed(0);
     };
 
     //是否有障碍
@@ -422,7 +444,8 @@ private:
 	//是否到达关键点
     bool if_changed(DistanceSensor distance, bool start)
     {
-        if (start) return false;
+        if (start) 
+            return false;
         return if_void(distance);
     }
 
@@ -430,14 +453,21 @@ private:
     void seek_void()
     {
         //
-        motorL.SetSpeed(-150); motorR.SetSpeed(-150); delay(100); motorL.SetSpeed(0); motorR.SetSpeed(0);
+        motorL.SetSpeed(-150); 
+        motorR.SetSpeed(-150); 
+        delay(100); 
+        motorL.SetSpeed(0); 
+        motorR.SetSpeed(0);
         //
-        motorL.SetSpeed(-150); motorR.SetSpeed(150);
+        motorL.SetSpeed(-150); 
+        motorR.SetSpeed(150);
         while (!if_void(distanceF))
         {
             delay(10);
-        };
-        delay(100);	motorL.SetSpeed(0); motorR.SetSpeed(0);
+        }
+        delay(100);
+        motorL.SetSpeed(0);
+        motorR.SetSpeed(0);
     }
 
     void go()
@@ -601,7 +631,7 @@ void Init()
     distanceF.Init();
     distanceL.Init();
     distanceR.Init();
-}
+		}
 
 //#define DEBUG
 #ifndef DEBUG
@@ -609,7 +639,7 @@ void Init()
 void setup()
 {
 	Init();
-}
+	}
 
 void loop()
 {
