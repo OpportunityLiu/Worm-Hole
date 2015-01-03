@@ -1,5 +1,5 @@
 
-#include "Wire\Wire.h"
+#include "Wire.h"
 
 //针脚定义
 typedef uint8_t pin;
@@ -273,12 +273,12 @@ public:
 	void Init()
 	{
 		pinMode(echo, INPUT);
-        analogWrite(trig, 128);
+		analogWrite(trig, 128);
 	}
 
 	//测试距离，单位为 um
 	unsigned long GetDistance()
-	{
+	{		
         pulseIn(echo, HIGH);
         return pulseIn(echo, HIGH) * 170;
 	}
@@ -291,12 +291,15 @@ private:
 DistanceSensor distanceF = DistanceSensor(9, 8);
 
 //左侧距离传感器
-DistanceSensor distanceL = DistanceSensor(10, 11);
+//DistanceSensor distanceL = DistanceSensor(10, 11);
+DistanceSensor distanceL = DistanceSensor(10, 12);
 
 //右侧距离传感器
-DistanceSensor distanceR = DistanceSensor(12, 13);
+//DistanceSensor distanceR = DistanceSensor(12, 13);
+DistanceSensor distanceR = DistanceSensor(11, 13);
 
 #endif
+
 
 #ifndef _WH_SUBMODULES_
 #define _WH_SUBMODULES_
@@ -310,12 +313,11 @@ void Test(byte message)
 }
 
 //蓝牙遥控
-class ModeRemoteCtrl
-{
-public:
-	ModeRemoteCtrl(){};
-    void begin(byte message)
+
+void ModeRemoteCtrl(byte message)
     {
+		int8_t _speed;
+		int16_t speed;
         _speed = message << 4;
         speed = 2 * _speed;
         if (bitRead(message, 4))
@@ -330,26 +332,13 @@ public:
         }
     }
 
-private:
-    int8_t _speed;
-    int16_t speed;
-};
-
-ModeRemoteCtrl modeRemoteCtrl = ModeRemoteCtrl();
-
 //直线前进
-class ModeStraight
-{
-public:
-    void begin()
+void ModeStraight()
     {
         motorL.SetSpeed(100); motorR.SetSpeed(100);
         motorL.WaitDistance(100);
         motorL.SetSpeed(0); motorR.SetSpeed(0);
     }
-};
-
-ModeStraight modeStraight = ModeStraight();
 
 //寻光模式
 class ModeLight
@@ -547,6 +536,7 @@ void SendState(byte message)
 byte Mode = 0;
 
 //蓝牙命令处理者
+
 void BlueBridge()
 {
 	if (blueTeeth.GetAvailable())
@@ -570,10 +560,10 @@ void BlueBridge()
 					switch (Mode)
 					{
 					case 0x01:
-						modeRemoteCtrl.begin(message);
+						ModeRemoteCtrl(message);
 						break;
 					case 0x02:
-						modeStraight.begin();
+						ModeStraight();
 						break;
 					case 0x03:
 						modeLight.begin();
@@ -624,22 +614,22 @@ void BlueBridge()
 //初始化函数
 void Init()
 {
-    blueTeeth.Init();
+    //blueTeeth.Init();
     motorL.Init();
     motorR.Init();
     lightSensor.Init();
-    distanceF.Init();
-    distanceL.Init();
-    distanceR.Init();
-		}
+    //distanceF.Init();
+    //distanceL.Init();
+    //distanceR.Init();
+}
 
-//#define DEBUG
+#define DEBUG
 #ifndef DEBUG
 
 void setup()
 {
 	Init();
-	}
+}
 
 void loop()
 {
@@ -652,11 +642,14 @@ void setup()
 {
 	Init();
 	Serial.begin(9600);
+	//blueTeeth.SentByte('1');
 }
 
 void loop()
 {
-	Serial.println(distanceF.GetDistance());
+	/*Serial.println(distanceF.GetDistance());*/
+	motorL.SetSpeed(200); /*delay(1000);
+	motorL.SetSpeed(0); delay(1000);*/
 }
 
 #endif
